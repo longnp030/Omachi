@@ -38,19 +38,22 @@
             }
         },
         mounted() {
-            axios.get(
-                this.getUserUrl + this.$cookies.get('omachi-user-id'),
-                {
-                    headers: {
-                        Authorization: `Bearer ${this.$cookies.get('omachi-auth-token')}`
+            let userId = this.$cookies.get('omachi-user-id');
+            if (userId !== null) {
+                axios.get(
+                    this.getUserUrl + userId,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${this.$cookies.get('omachi-auth-token')}`
+                        }
                     }
-                }
-            ).then((res) => {
-                this.user = res.data;
-                console.log(this.user);
-            }).catch((res) => {
-                console.log(res);
-            });
+                ).then((res) => {
+                    this.user = res.data;
+                    console.log(this.user);
+                }).catch((res) => {
+                    console.log(res);
+                });
+            }
         },
         methods: {
             logout() {

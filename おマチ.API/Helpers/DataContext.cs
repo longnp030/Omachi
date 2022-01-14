@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using おマチ.API.Entities;
+using おマチ.API.Models.Matching;
 
 namespace おマチ.API.Helpers
 {
@@ -24,6 +25,10 @@ namespace おマチ.API.Helpers
             options.UseMySql(Configuration.GetConnectionString("WebApiDatabase"), ServerVersion.AutoDetect(Configuration.GetConnectionString("WebApiDatabase")));
         }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<User> User { get; set; }
+        public DbSet<Activity> Activity { get; set; }
+        public DbSet<Cell> Cell { get; set; }
+        public DbSet<Interval> Interval { get; set; }
+        public DbSet<PointOfInterest> PointOfInterest { get; set; }
     }
 }

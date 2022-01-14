@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using おマチ.API.Authorization;
 using おマチ.API.Helpers;
+using おマチ.API.Models.Activity;
+using おマチ.API.Models.Matching;
 using おマチ.API.Models.User;
 using おマチ.API.Services;
 
@@ -18,12 +20,16 @@ namespace おマチ.API.Controllers
     public class UsersController : ControllerBase
     {
         private IUserService _userService;
+        private IActivityService _activityService;
+        private IMatchingService _matchingService;
         private IMapper _mapper;
         private readonly AppSettings _appSettings;
 
-        public UsersController(IUserService userService, IMapper mapper, IOptions<AppSettings> appSettings)
+        public UsersController(IUserService userService, IActivityService activityService, IMatchingService matchingService, IMapper mapper, IOptions<AppSettings> appSettings)
         {
             _userService = userService;
+            _activityService = activityService;
+            _matchingService = matchingService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
@@ -70,6 +76,50 @@ namespace おマチ.API.Controllers
         {
             _userService.Delete(id);
             return Ok(new { message = "User deleted successfully" });
+        }
+
+        /// <summary>
+        /// API lấy toàn bộ Hoạt động của người dùng có mã định danh duy nhất id
+        /// </summary>
+        /// <param name="id">Mã định danh duy nhất của người dùng</param>
+        /// <returns>Toàn bộ Hoạt động của người dùng</returns>
+        [HttpGet("{id}/activities")]
+        public IActionResult GetUserActivities(Guid id)
+        {
+            var activities = _activityService.GetUserActivities(id);
+            if (activities.Count() > 0)
+            {
+                return Ok(activities);
+            }
+            else
+            {
+                return NoContent();
+            }
+        }
+
+        /// <summary>
+        /// Thêm mới một hoạt động
+        /// </summary>
+        /// <param name="model">Thông tin của hoạt động</param>
+        /// <returns>HTTP Response</returns>
+        [HttpPost("{id}/activities")]
+        public IActionResult AddActivity(Guid id, ActivityAddRequest model)
+        {
+            _activityService.Add(id, model);
+            return Ok(new { message = "Activity added successfully" });
+        }
+
+        /// <summary>
+        /// API so khớp chuyến đi chung cho người dùng có mã định danh duy nhất id
+        /// </summary>
+        /// <param name="id">Mã định danh duy nhất của người dùng</param>
+        /// <param name="carRequest">Thông tin chuyến đi chung xe</param>
+        /// <returns>Các chuyến đi chung xe có khả năng</returns>
+        [HttpPost("{id}/matching")]
+        public IActionResult Matching(Guid id, [FromBody] CarRequest carRequest)
+        {
+            var lstCarpooling = _matchingService.Matching(id, carRequest);
+            return Ok(lstCarpooling);
         }
     }
 }

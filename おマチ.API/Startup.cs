@@ -71,6 +71,8 @@ namespace おマチ.API
             // configure DI for application services
             services.AddScoped<IJwtUtils, JwtUtils>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IActivityService, ActivityService>();
+            services.AddScoped<IMatchingService, MatchingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

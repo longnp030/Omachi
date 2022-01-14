@@ -61,6 +61,12 @@
     <Content Include="src\css\NavigationPanel.css">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\css\Register.css">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\css\UpdateProfile.css">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\plugins\router\index.js">
       <SubType>Code</SubType>
     </Content>

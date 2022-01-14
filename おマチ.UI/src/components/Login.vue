@@ -1,29 +1,34 @@
 <template>
-    <div id="login">
+    <v-app id="login" data-app>
         <v-form class="login-form"
                 ref="form"
                 v-model="valid"
                 lazy-validation>
             <v-text-field label="Email"
-                          :rules="[rules.required, rules.email]"
-                          v-model="authModel.Email"></v-text-field>
+                            :rules="[rules.required, rules.email]"
+                            v-model="authModel.Email"></v-text-field>
             <v-text-field label="Password"
-                          :rules="[rules.required]"
-                          :type="'password'"
-                          v-model="authModel.Password"></v-text-field>
+                            :rules="[rules.required]"
+                            :type="'password'"
+                            v-model="authModel.Password"></v-text-field>
 
             <v-checkbox v-model="saveCred"
                         color="red"
                         label="Remember me"></v-checkbox>
 
             <v-btn :disabled="!valid"
-                   color="success"
-                   class="mr-4"
-                   @click="login">
+                    color="success"
+                    class="mr-4"
+                    @click="login">
                 Login
             </v-btn>
+            <v-btn color="success"
+                    class="mr-4"
+                    @click="register">
+                Register
+            </v-btn>
         </v-form>
-    </div>
+    </v-app>
 </template>
 
 <script>
@@ -87,6 +92,10 @@
                 }).catch((res) => {
                     console.log(res)
                 });
+            },
+
+            register() {
+                this.$router.push('register');
             }
         }
     };

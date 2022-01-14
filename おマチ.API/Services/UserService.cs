@@ -36,7 +36,7 @@ namespace おマチ.API.Services
 
         public AuthenticateResponse Authenticate(AuthenticateRequest model)
         {
-            var user = _context.Users.SingleOrDefault(x => x.Email == model.Email);
+            var user = _context.User.SingleOrDefault(x => x.Email == model.Email);
 
             // validate
             if (user == null || !BCryptNet.Verify(model.Password, user.PasswordHash))
@@ -52,7 +52,7 @@ namespace おマチ.API.Services
 
         public IEnumerable<User> GetAll()
         {
-            return _context.Users;
+            return _context.User;
         }
 
         public User GetById(Guid id)
@@ -63,7 +63,7 @@ namespace おマチ.API.Services
         public void Register(RegisterRequest model)
         {
             // validate
-            if (_context.Users.Any(x => x.Email == model.Email))
+            if (_context.User.Any(x => x.Email == model.Email))
             {
                 throw new AppException("Username '" + model.Email + "' is already taken");
             }
@@ -83,10 +83,10 @@ namespace おマチ.API.Services
             user.PasswordHash = BCryptNet.HashPassword(model.Password);
 
             // join date
-            user.JoinDate = DateTime.Now;
+            user.Timestamp = DateTime.Now;
 
             // save user
-            _context.Users.Add(user);
+            _context.User.Add(user);
             _context.SaveChanges();
 
             
@@ -96,12 +96,6 @@ namespace おマチ.API.Services
         {
             var user = GetUser(id);
 
-            // validate
-            if (model.UserName != user.UserName && _context.Users.Any(x => x.UserName == model.UserName))
-            {
-                throw new AppException("Username '" + model.UserName + "' is already taken");
-            }
-
             // hash password if it was entered
             if (!String.IsNullOrEmpty(model.Password))
             {
@@ -110,14 +104,14 @@ namespace おマチ.API.Services
 
             // copy model to user and save
             _mapper.Map(model, user);
-            _context.Users.Update(user);
+            _context.User.Update(user);
             _context.SaveChanges();
         }
 
         public void Delete(Guid id)
         {
             var user = GetUser(id);
-            _context.Users.Remove(user);
+            _context.User.Remove(user);
             _context.SaveChanges();
         }
 
@@ -125,7 +119,7 @@ namespace おマチ.API.Services
 
         private User GetUser(Guid id)
         {
-            var user = _context.Users.Find(id);
+            var user = _context.User.Find(id);
             if (user == null)
             {
                 throw new KeyNotFoundException("User not found");
