@@ -48,11 +48,11 @@ namespace おマチ.API.Services
              * mappedCarRequest: Yêu cầu đi chung được ánh xạ
              * mappedActivities: Hoạt động thường ngày được ánh xạ
              * semanticGrid: Lưới ngữ nghĩa
-             * timeWindow: Cửa sổ thời gian
+             * timeWindow: Cửa sổ thời gian (Mặc định = 1 giờ)
              */
             var mappedCarRequest = GetMappedCarRequest(userId, carRequest);
             var mappedActivities = GetMappedActivities(userId);
-            var semanticGrid = GetSemanticGrid(carRequest.EndPOI.Category);
+            var semanticGrid = GetSemanticGrid(carRequest.PointOfInterest.Category);
             var timeWindow = TimeSpan.Parse("01:00:00");
 
             // Khởi tạo các chuyến đi chung có khả thi bằng list rỗng
@@ -241,7 +241,7 @@ namespace おマチ.API.Services
             var mappedCarRequest = new MappedCarRequest
             {
                 UserId = userId,
-                Category = carRequest.EndPOI.Category
+                Category = carRequest.PointOfInterest.Category
             };
 
             foreach (Cell cell in grid)
@@ -256,8 +256,8 @@ namespace おマチ.API.Services
             }
             foreach (Cell cell in grid)
             {
-                if (carRequest.EndPOI.Lat <= cell.TopLeftLat && carRequest.EndPOI.Lat > cell.BotRightLat
-                    && carRequest.EndPOI.Lon >= cell.TopLeftLon && carRequest.EndPOI.Lon < cell.BotRightLon)
+                if (carRequest.PointOfInterest.Lat <= cell.TopLeftLat && carRequest.PointOfInterest.Lat > cell.BotRightLat
+                    && carRequest.PointOfInterest.Lon >= cell.TopLeftLon && carRequest.PointOfInterest.Lon < cell.BotRightLon)
                 {
                     // mappedCarRequest.CellEndId = cell.Id; // Bản gốc
                     mappedCarRequest.CellEnd = cell; // Sửa MappedCarRequest
@@ -276,7 +276,7 @@ namespace おマチ.API.Services
             }
             foreach (Interval interval in setOfIntvals)
             {
-                if (ToTime(carRequest.EndPOI.CloseTime) >= ToTime(interval.Start) && ToTime(carRequest.EndPOI.CloseTime) < ToTime(interval.End))
+                if (ToTime(carRequest.PointOfInterest.CloseTime) >= ToTime(interval.Start) && ToTime(carRequest.PointOfInterest.CloseTime) < ToTime(interval.End))
                 {
                     // mappedCarRequest.IntvEndId = interval.Id; // Bản gốc
                     mappedCarRequest.IntvEnd = interval; // Sửa MappedCarRequest
@@ -302,10 +302,11 @@ namespace おマチ.API.Services
 
             foreach (Cell cell in grid)
             {
-                var semanticCell = new SemanticCell();
-
-                semanticCell.StartTime = new TimeSpan();
-                semanticCell.EndTime = TimeSpan.Parse("23:59:59");
+                var semanticCell = new SemanticCell
+                {
+                    StartTime = new TimeSpan(),
+                    EndTime = TimeSpan.Parse("23:59:59")
+                };
 
                 foreach (PointOfInterest poi in POIs)
                 {
