@@ -22,30 +22,32 @@
                         </v-col>
                         <v-col cols="12">
                             <v-text-field label="Place"
-                                          required></v-text-field>
+                                          :value="poi_name"
+                                          readonly></v-text-field>
                         </v-col>
                         <v-col cols="12">
                             <v-menu ref="menu"
                                     v-model="menu2"
                                     :close-on-content-click="false"
                                     :nudge-right="40"
-                                    :return-value.sync="carRequest.StartTime"
+                                    :return-value.sync="starTime"
                                     transition="scale-transition"
                                     offset-y
                                     max-width="290px"
                                     min-width="290px">
                                 <template v-slot:activator="{ on, attrs }">
                                     <v-text-field label="StartTime*"
-                                                  v-model="carRequest.StartTime"
+                                                  v-model="starTime"
+                                                  :rules="[rules.required]"
                                                   readonly
                                                   v-bind="attrs"
                                                   v-on="on"></v-text-field>
                                 </template>
                                 <v-time-picker v-if="menu2"
-                                               v-model="carRequest.StartTime"
+                                               v-model="starTime"
                                                full-width
                                                use-seconds
-                                               @click:second="$refs.menu.save(carRequest.StartTime)"></v-time-picker>
+                                               @click:second="$refs.menu.save(starTime)"></v-time-picker>
                             </v-menu>
                         </v-col>
                     </v-row>
@@ -69,6 +71,7 @@
 </template>
 
 <script>
+    import axios from "axios";
     export default {
         name: 'FindTripForm',
         props: {
@@ -95,6 +98,9 @@
                     return []
                 },
             },
+            startLat: Number,
+            startLon: Number,
+            poiId: String,
         },
         data() {
             return {
@@ -102,9 +108,19 @@
                 menu2: false,
                 dialog: false,
                 carRequest: {},
+                rules: {
+                    required: value => !!value || 'Required.',
+                },
                 // 2 data để mutate trong con, dùng làm v-model để hiển thị cate trong con
                 selected_category_for_mutation: null,
                 categories_for_mutation: [],
+
+                poi: null,
+                poi_name: '',
+                starTime: '',
+                get_poi_url: "https://localhost:5001/POIs/poi_id",
+
+                matching_url: "https://localhost:5001/Users/user_id/matching",
             };
         },
         methods: {
@@ -113,7 +129,35 @@
                 this.$emit("findTrip", false);
             },
             confirmFindTrip() {
-
+                this.$refs.form.validate();
+                if (this.starTime) {
+                    this.buildCarRequest();
+                    console.log(this.carRequest.StartTime);
+                    axios.post(
+                        this.matching_url.replace('user_id', this.user_id),
+                        JSON.parse(JSON.stringify(this.carRequest)),
+                        {
+                            headers: {
+                                Authorization: `Bearer ${this.jwt_token}`
+                            }
+                        }
+                    ).then((res) => {
+                        console.log(res);
+                        this.cancelFindTrip();
+                    }).catch((res) => {
+                        console.log(res);
+                    });
+                }
+            },
+            buildCarRequest() {
+                this.carRequest.UserId = this.user_id;
+                this.carRequest.StartLat = this.startLat;
+                this.carRequest.StartLon = this.startLon;
+                this.carRequest.PointOfInterest = this.poi;
+                this.carRequest.StartTime = this.starTime;
+                this.carRequest.Timestamp = Date();
+                console.log(this.carRequest.StartTime);
+                console.log(this.carRequest);
             },
             filterCategory(selected_category) {
                 this.$emit('filterCategory', selected_category);
@@ -132,6 +176,21 @@
                 deep: true,
                 handler: function () {
                     this.categories_for_mutation = this.categories;
+                }
+            },
+            poiId: {
+                deep: true,
+                handler: function () {
+                    console.log(this.poiId);
+                    axios.get(
+                        this.get_poi_url.replace('poi_id', this.poiId)
+                    ).then((res) => {
+                        this.poi = res.data;
+                        this.poi_name = this.poi.Name;
+                        console.log(this.poi);
+                    }).catch((res) => {
+                        console.log(res);
+                    })
                 }
             },
         }

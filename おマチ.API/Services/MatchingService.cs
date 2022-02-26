@@ -327,8 +327,9 @@ namespace おマチ.API.Services
                         }
                     }
 
-                    semanticGrid.Add(semanticCell);
+                    
                 }
+                semanticGrid.Add(semanticCell);
             }
 
             return semanticGrid;

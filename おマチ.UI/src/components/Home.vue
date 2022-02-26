@@ -59,6 +59,9 @@
                                       :jwt_token="jwtToken"
                                       :selected_category="selected_category"
                                       :categories="categories"
+                                      :startLat="center[0]"
+                                      :startLon="center[1]"
+                                      :poiId="destPoiId"
                                       @filterCategory="filterCategory"/>
                     </v-dialog>
                 </l-control>
@@ -85,7 +88,8 @@
                                  :fillColor="'green'"
                                  :fillOpacity="0.8"
                                  :radius="8"
-                                 :lat-lng="[poi.Lat, poi.Lon]">
+                                 :lat-lng="[poi.Lat, poi.Lon]"
+                                 @click="chooseTripDest($event, poi.Id)">
                     <l-tooltip>
                         Name: {{poi.Name}}
                         <br />
@@ -99,6 +103,13 @@
                         <br />
                         Category: {{poi.Category}}
                     </l-tooltip>
+                </l-circle-marker>
+                <l-circle-marker :color="'yellow'"
+                                 :fillColor="'yellow'"
+                                 :fillOpacity="0.8"
+                                 :radius="6"
+                                 :lat-lng="[chosenPoi.Lat, chosenPoi.Lon]"
+                                 v-if="chosenPoi">
                 </l-circle-marker>
             </l-map>
         </div>
@@ -145,6 +156,8 @@
                     latlons: [],
                     color: 'SlateBlue'
                 },
+
+                // for 2 form (add, find)
                 add_act_dialog: false,
                 find_trip_dialog: false,
 
@@ -163,6 +176,10 @@
 
                 // for edit marker
                 editMarkerId: '',
+
+                // for findTrip
+                destPoiId: '',
+                chosenPoi: null,
             };
         },
         props: {
@@ -320,7 +337,10 @@
 
             editMarker(dialog, editMarkerId) {
                 //console.log(this.formMode);
-                if (this.formMode === 2) { // Nếu đang add mà click lại vào marker thì ko chuyển thành edit
+
+                // Nếu đang add mà click lại vào marker thì ko chuyển thành edit
+                // Nếu form add đóng (mode = 2) -> chuyển mode = 1
+                if (this.formMode === 2) { 
                     this.formMode = 1;
                     this.editMarkerId = editMarkerId;
 
@@ -346,8 +366,24 @@
             },
 
             findTrip(dialog) {
-                console.log('finding trip...');
+                //console.log('finding trip...');
                 this.find_trip_dialog = dialog;
+                if (!dialog) {
+                    this.chosenPoi = null;
+                }
+            },
+
+            chooseTripDest(event, poiId) {
+                //console.log(event.target);
+                if (this.find_trip_dialog) {
+                    this.chosenPoi = {
+                        Lat: event.target._latlng.lat,
+                        Lon: event.target._latlng.lng
+                    };
+                    this.destPoiId = poiId;
+                    //console.log(event.target._latlng);
+                    
+                }
             },
         },
         watch: {
