@@ -73,6 +73,7 @@ namespace おマチ.API
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IActivityService, ActivityService>();
             services.AddScoped<IMatchingService, MatchingService>();
+            services.AddScoped<IPOIService, POIService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

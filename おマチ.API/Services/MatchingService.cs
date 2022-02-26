@@ -102,8 +102,8 @@ namespace おマチ.API.Services
                 foreach (MappedActivity mappedActivity in mappedActivities)
                 {
                     /*
-                     * Khởi tạo một biến để kiểm tra có hoạt động thường ngày nào 
-                     * nằm trong ô không gian ngữ nghĩa không
+                     * Khởi tạo một biến để kiểm tra có ô không gian ngữ nghĩa nào 
+                     * chứa hoạt động thường ngày được ánh xạ đang xét hay không
                      * 
                      * Mã định danh của ô của hoạt động = Mã định danh ô ngữ nghĩa
                      * Thời gian bắt đầu hoạt động < Thời gian kết thúc của ô ngữ nghĩa
@@ -156,6 +156,8 @@ namespace おマチ.API.Services
                 /*
                  * Số yêu cầu đi chung khả thi = Số điểm đón * Số điểm đến 
                  * |lstCarpooling| = |p|x|d|
+                 * 
+                 * Chưa thêm code add vào CSDL
                  */
                 foreach (Cell d in destinations)
                 {

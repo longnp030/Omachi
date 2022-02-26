@@ -100,7 +100,7 @@ namespace おマチ.API.Services
         /// <returns>Các hoạt động của người dùng</returns>
         public IEnumerable<Activity> GetUserActivities(Guid userId)
         {
-            var activities = _context.Activity.Where(a => a.UserId == userId).ToList();
+            var activities = _context.Activity.Where(a => a.UserId == userId).OrderBy(a => a.StartTime).ToList();
             if (activities.Count == 0)
             {
                 throw new KeyNotFoundException("No activity found");

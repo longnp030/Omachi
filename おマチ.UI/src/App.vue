@@ -11,7 +11,7 @@
             
         },
         created() {
-            this.$router.push('update-profile', () => { });
+            this.$router.push('home', () => { });
         }
     };
 </script>

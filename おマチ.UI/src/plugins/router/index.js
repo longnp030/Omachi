@@ -5,7 +5,6 @@ Vue.use(VueRouter);
 import Login from '../../components/Login.vue';
 import Register from '../../components/Register.vue';
 import Home from '../../components/Home.vue';
-import UpdateProfile from '../../components/UpdateProfile.vue';
 
 const routes = [
     {
@@ -22,11 +21,6 @@ const routes = [
         path: '/home',
         name: 'home',
         component: Home,
-    },
-    {
-        path: '/update-profile',
-        name: 'update-profile',
-        component: UpdateProfile,
     },
 ]
 const router = new VueRouter({

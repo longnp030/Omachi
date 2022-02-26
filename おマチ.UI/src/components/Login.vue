@@ -50,6 +50,9 @@
                 authModel: {},
             };
         },
+        mounted() {
+            console.log(this.saveCred);
+        },
         methods: {
             /**
              * Shortcut for saving cookies
@@ -75,8 +78,9 @@
                     var authToken = res.data.JwtToken;
                     var userId = res.data.Id;
 
+                    console.log(this.saveCred);
                     if (this.saveCred) {
-                        this.saveCookie(authToken, userId, '7d');
+                        this.saveCookie(authToken, userId, -1);
                     } else {
                         this.saveCookie(authToken, userId, 0);
                     }
@@ -97,6 +101,11 @@
             register() {
                 this.$router.push('register');
             }
+        },
+        watch: {
+            saveCred: function () {
+                console.log('saveCred is set to: ', this.saveCred);
+            },
         }
     };
 </script>

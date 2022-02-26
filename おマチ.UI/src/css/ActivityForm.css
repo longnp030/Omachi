@@ -1,0 +1,14 @@
+.v-card__title {
+    background-color: #aad8e6;
+}
+
+.v-time-picker-title {
+    color: #000000 !important;
+}
+
+.v-time-picker-clock__item--active {
+    color: #000000 !important;
+}
+
+
+

@@ -29,6 +29,11 @@ namespace おマチ.API.Entities
         public float Lon { get; set; }
 
         /// <summary>
+        /// Địa chỉ điểm ưa thích
+        /// </summary>
+        public String Address { get; set; }
+
+        /// <summary>
         /// Loại điểm ưa thích
         /// </summary>
         public String Category { get; set; }
@@ -42,6 +47,11 @@ namespace おマチ.API.Entities
         /// Giờ đóng cửa của điểm ưa thích
         /// </summary>
         public String CloseTime { get; set; }
+
+        /// <summary>
+        /// Đánh giá điểm ưa thích
+        /// </summary>
+        public float Rating { get; set; }
 
         #endregion Attributes
     }
