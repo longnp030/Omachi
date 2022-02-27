@@ -62,6 +62,13 @@ namespace おマチ.API.Controllers
             var categories = _poiService.GetCategories();
             return Ok(categories);
         }
+
+        [HttpGet("Grid")]
+        public IActionResult GetGrid()
+        {
+            var grid = _poiService.GetGrid();
+            return Ok(grid);
+        }
         #endregion CRUD Methods
     }
 }

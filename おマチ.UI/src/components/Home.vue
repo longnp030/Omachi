@@ -62,7 +62,7 @@
                                       :startLat="center[0]"
                                       :startLon="center[1]"
                                       :poiId="destPoiId"
-                                      @filterCategory="filterCategory"/>
+                                      @filterCategory="filterCategory" />
                     </v-dialog>
                 </l-control>
                 <l-circle-marker v-for="marker in markers"
@@ -110,6 +110,29 @@
                                  :radius="6"
                                  :lat-lng="[chosenPoi.Lat, chosenPoi.Lon]"
                                  v-if="chosenPoi">
+                </l-circle-marker>
+
+                <l-circle-marker v-for="point in grid"
+                                 :key="point.Id + 'tl'"
+                                 :color="'green'"
+                                 :fillColor="'green'"
+                                 :fillOpacity="0.8"
+                                 :radius="8"
+                                 :lat-lng="[point.TopLeftLat, point.TopLeftLon]">
+                    <l-tooltip>
+                        {{point.TopLeftLat}}, {{point.TopLeftLon}}
+                    </l-tooltip>
+                </l-circle-marker>
+                <l-circle-marker v-for="point in grid"
+                                 :key="point.Id + 'br'"
+                                 :color="'green'"
+                                 :fillColor="'green'"
+                                 :fillOpacity="0.8"
+                                 :radius="8"
+                                 :lat-lng="[point.BotRightLat, point.BotRightLon]">
+                    <l-tooltip>
+                        {{point.BotRightLat}}, {{point.BotRightLon}}
+                    </l-tooltip>
                 </l-circle-marker>
             </l-map>
         </div>
@@ -180,6 +203,8 @@
                 // for findTrip
                 destPoiId: '',
                 chosenPoi: null,
+                grid: [],
+                grid_get_url: "https://localhost:5001/POIs/Grid",
             };
         },
         props: {
@@ -196,6 +221,7 @@
         async mounted() {
             await this.getUser();
             await this.getCurrLoc();
+            await this.getGrid();
             await this.getCategories();
             await this.drawActivitiesRoute();
         },
@@ -243,6 +269,16 @@
             },
             async getCurrLoc() {
                 navigator.geolocation.getCurrentPosition(this.curr_loc_success, this.curr_loc_error, this.curr_loc_options);
+            },
+
+            async getGrid() {
+                axios.get(
+                    this.grid_get_url
+                ).then((res) => {
+                    this.grid = res.data
+                }).catch((res) => {
+                    console.log(res);
+                });
             },
 
             async getActivities() {

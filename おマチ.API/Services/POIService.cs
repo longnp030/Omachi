@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using おマチ.API.Authorization;
 using おマチ.API.Entities;
 using おマチ.API.Helpers;
+using おマチ.API.Models.Matching;
 
 namespace おマチ.API.Services
 {
@@ -15,6 +16,7 @@ namespace おマチ.API.Services
         PointOfInterest GetById(Guid id);
         IEnumerable<PointOfInterest> GetByCategory(String category);
         public IEnumerable<String> GetCategories();
+        public IEnumerable<Cell> GetGrid();
     }
     #endregion Interface
 
@@ -83,6 +85,16 @@ namespace おマチ.API.Services
 
             return categories;
 
+        }
+
+        public IEnumerable<Cell> GetGrid()
+        {
+            var grid = _context.Cell.ToList();
+            if (grid.Count == 0)
+            {
+                throw new KeyNotFoundException("No cell found");
+            }
+            return grid;
         }
         #endregion Methods
     }
