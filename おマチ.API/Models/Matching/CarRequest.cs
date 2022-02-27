@@ -45,8 +45,19 @@ namespace おマチ.API.Models.Matching
         /// <para>Shadow property = PointOfInterest.Id trong CSDL</para>
         /// <para>CarRequest.PointOfInterest.Name -> Booking.Name</para>
         /// <para>Modified: 15/01/2022: Sửa từ "EndPOI" sang "PointOfInterest"</para>
+        /// <para>Commented on 27/02/2022</para>
         /// </summary>
-        public PointOfInterest PointOfInterest { get; set; }
+        // public PointOfInterest PointOfInterest { get; set; }
+
+        /// <summary>
+        /// <para>Created: 27/02/2022</para>
+        /// </summary>
+        public String Category { get; set; }
+
+        /// <summary>
+        /// <para>Created: 27/02/2022</para>
+        /// </summary>
+        public String ArrivalTime { get; set; }
 
         /// <summary>
         /// Thời điểm tạo yêu cầu đi chung

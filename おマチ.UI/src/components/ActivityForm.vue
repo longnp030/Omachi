@@ -33,6 +33,7 @@
                                 </template>
                                 <v-time-picker v-if="menu2"
                                                v-model="activity.StartTime"
+                                               format="24hr"
                                                full-width
                                                use-seconds
                                                @click:second="$refs.menu.save(activity.StartTime)"></v-time-picker>

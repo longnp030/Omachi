@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using おマチ.API.Authorization;
@@ -14,7 +15,8 @@ namespace おマチ.API.Services
 {
     public interface IMatchingService
     {
-        IEnumerable<MatchedTrip> Finding(Guid userId, CarRequest carRequest);
+        //IEnumerable<MatchedTrip> Finding(Guid userId, CarRequest carRequest);
+        IEnumerable<FoundTrip> Finding(Guid userId, CarRequest carRequest);
     }
 
     public class MatchingService : IMatchingService
@@ -41,7 +43,9 @@ namespace おマチ.API.Services
         /// <param name="userId">Mã định danh duy nhất của người dùng</param>
         /// <param name="carRequest">Thông tin yêu câu đi chung</param>
         /// <returns>Các chuyến đi chung khả thi</returns>
-        public IEnumerable<MatchedTrip> Finding(Guid userId, CarRequest carRequest)
+        //public IEnumerable<MatchedTrip> Finding(Guid userId, CarRequest carRequest)
+        public IEnumerable<FoundTrip> Finding(Guid userId, CarRequest carRequest)
+
         {
             /*
              * Xác định
@@ -52,7 +56,7 @@ namespace おマチ.API.Services
              */
             var mappedCarRequest = GetMappedCarRequest(userId, carRequest);
             var mappedActivities = GetMappedActivities(userId);
-            var semanticGrid = GetSemanticGrid(carRequest.PointOfInterest.Category);
+            var semanticGrid = GetSemanticGrid(carRequest.Category);
             var timeWindow = TimeSpan.Parse("01:00:00");
 
             // Khởi tạo các chuyến đi chung có khả thi bằng list rỗng
@@ -85,7 +89,7 @@ namespace おマチ.API.Services
                  */
                 if (mappedActivity.Cell.Id == mappedCarRequest.CellStart.Id
                     && ToTime(mappedCarRequest.IntvStart.Start) - timeWindow <= ToTime(mappedActivity.Intv.Start)
-                    && ToTime(mappedActivity.Intv.Start) <= ToTime(mappedCarRequest.IntvEnd.Start) + timeWindow)
+                    && ToTime(mappedActivity.Intv.Start) <= ToTime(mappedCarRequest.IntvArrival.Start) + timeWindow)
                 {
                     // pickups.Add(_context.Cells.Find(mappedActivity.CellId)); // Bản gốc
                     pickups.Add(mappedActivity.Cell); // Sửa MappedActivity
@@ -99,6 +103,7 @@ namespace おマチ.API.Services
                 var destinations = new List<Cell>();
 
                 // Lặp từng hoạt động trong các hoạt động thường ngày được ánh xạ
+                //var idx = 0;
                 foreach (MappedActivity mappedActivity in mappedActivities)
                 {
                     /*
@@ -129,7 +134,7 @@ namespace おマチ.API.Services
 
                     /*
                      * Nếu hoạt động có tồn tại trong lưới ngữ nghĩa và
-                     * thời điểm bắt đầu hoạt động < thời gian kết thúc của yêu cầu đi chung
+                     * thời điểm bắt đầu hoạt động < thời gian đến của yêu cầu đi chung
                      */
                     /* Bản gốc
                     if (_context.Intervals.Find(mappedCarRequest.IntvStartId).Start - timeWindow <= _context.Intervals.Find(mappedActivity.IntvId).Start
@@ -144,13 +149,16 @@ namespace おマチ.API.Services
                     /*
                      * Sửa MappedActivity -> Sửa MappedCarRequest
                      */
-                    if (anyActExistsInSemanticGrid
+                    if (anyActExistsInSemanticGrid// && idx <= mappedActivities.Count() - 2
                         && ToTime(mappedCarRequest.IntvStart.Start) - timeWindow <= ToTime(mappedActivity.Intv.Start)
-                        && ToTime(mappedActivity.Intv.Start) <= ToTime(mappedCarRequest.IntvEnd.Start) + timeWindow)
+                        && ToTime(mappedActivity.Intv.Start) <= ToTime(mappedCarRequest.IntvArrival.Start) + timeWindow)
+                        //&& ToTime(mappedCarRequest.IntvArrival.Start) < ToTime(mappedActivities.ElementAt(idx+1).Intv.Start))
                     {
                         // destinations.Add(_context.Cells.Find(mappedActivity.CellId)); // Bản gốc
                         destinations.Add(mappedActivity.Cell); // Sửa MappedActivity
                     }
+
+                    //idx++;
                 }
 
                 /*
@@ -175,8 +183,8 @@ namespace おマチ.API.Services
                 }
             }
 
-            //return foundTrips;
-            return Matching(foundTrips);
+            return foundTrips;
+            //return Matching(foundTrips);
         }
 
         private IEnumerable<MatchedTrip> Matching(IEnumerable<FoundTrip> foundTrips)
@@ -184,7 +192,7 @@ namespace おマチ.API.Services
             // foundTrips: Current user's found trips
             /* GOAL: Query other users' found trips 
              *       that have same Start Interval, Start Cell, End Cell
-             *       and found time less than or greater than foundTrip's Timestamp one minute.
+             *       [and found time less than or greater than foundTrip's Timestamp one minute.]
              *       Combine those found trip into one MatchedTrip
              *       -> Return that one MatchedTrip
              */
@@ -192,12 +200,12 @@ namespace おマチ.API.Services
             var similarTrips = new List<FoundTrip>();
             foreach (FoundTrip foundTrip in foundTrips)
             {
-                var similarTrip = _context.FoundTrip.Where(t => t.UserId != foundTrip.UserId)
+                var _similarTrips = _context.FoundTrip.Where(t => t.UserId != foundTrip.UserId)
                                   .Where(t => t.StartIntervalId == foundTrip.StartIntervalId)
                                   .Where(t => t.StartCellId == foundTrip.StartCellId)
                                   .Where(t => t.EndCellId == foundTrip.EndCellId).ToList();
                                   //.Where(t => t.Timestamp >= foundTrip.Timestamp.AddMinutes(-1)).ToList();
-                similarTrips.AddRange(similarTrip);
+                similarTrips.AddRange(_similarTrips);
             }
                 
             var matchedTrips = new List<MatchedTrip>();
@@ -284,7 +292,8 @@ namespace おマチ.API.Services
             var mappedCarRequest = new MappedCarRequest
             {
                 UserId = userId,
-                Category = carRequest.PointOfInterest.Category
+                // Category = carRequest.PointOfInterest.Category // Trước 27/02/2022
+                Category = carRequest.Category // Sửa CarRequest
             };
 
             foreach (Cell cell in grid)
@@ -297,6 +306,10 @@ namespace おマチ.API.Services
                     break;
                 }
             }
+
+            /*
+             * Commented on 27/02/2022
+             * Changed CarRequest
             foreach (Cell cell in grid)
             {
                 if (carRequest.PointOfInterest.Lat <= cell.TopLeftLat && carRequest.PointOfInterest.Lat > cell.BotRightLat
@@ -307,6 +320,7 @@ namespace おマチ.API.Services
                     break;
                 }
             }
+            */
 
             foreach (Interval interval in setOfIntvals)
             {
@@ -317,12 +331,28 @@ namespace おマチ.API.Services
                     break;
                 }
             }
+
+            /*
+             * Commented on 27/02/2022
+             * Changed CarRequest
             foreach (Interval interval in setOfIntvals)
             {
                 if (ToTime(carRequest.PointOfInterest.CloseTime) >= ToTime(interval.Start) && ToTime(carRequest.PointOfInterest.CloseTime) < ToTime(interval.End))
                 {
                     // mappedCarRequest.IntvEndId = interval.Id; // Bản gốc
                     mappedCarRequest.IntvEnd = interval; // Sửa MappedCarRequest
+                    break;
+                }
+            }
+            */
+            /* Changed CarRequest
+             * Created: 27/02/2022
+             * */
+            foreach (Interval interval in setOfIntvals)
+            {
+                if (ToTime(carRequest.ArrivalTime) >= ToTime(interval.Start) && ToTime(carRequest.ArrivalTime) < ToTime(interval.End))
+                {
+                    mappedCarRequest.IntvArrival = interval;
                     break;
                 }
             }
@@ -347,7 +377,7 @@ namespace おマチ.API.Services
             {
                 var semanticCell = new SemanticCell
                 {
-                    StartTime = new TimeSpan(),
+                    StartTime = TimeSpan.Parse("00:00:01"),
                     EndTime = TimeSpan.Parse("23:59:59")
                 };
 
@@ -366,11 +396,18 @@ namespace おマチ.API.Services
                         {
                             semanticCell.EndTime = ToTime(poi.CloseTime);
                         }
-                    }
-
-                    
+                    }                 
                 }
-                semanticGrid.Add(semanticCell);
+                if (semanticCell.CellId.ToString() != "00000000-0000-0000-0000-000000000000")
+                {
+                    semanticGrid.Add(semanticCell);
+                }
+            }
+
+            
+            foreach (var item in semanticGrid)
+            {
+                Console.WriteLine(string.Format("Item: {0} - Cost: {1} - {2}", item.StartTime, item.EndTime, item.CellId.ToString()));
             }
 
             return semanticGrid;

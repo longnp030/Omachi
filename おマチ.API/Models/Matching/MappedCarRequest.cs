@@ -30,16 +30,18 @@ namespace おマチ.API.Models.Matching
         /// <summary>
         /// Ô điểm đến
         /// <para>Modified: 13/01/2022: Thay đổi từ Guid sang object Cell</para>
+        /// <para>Modified: Commented on  27/02/2022</para>
         /// </summary>
         // public Guid CellEndId { get; set; }
-        public Cell CellEnd { get; set; }
+        // public Cell CellEnd { get; set; }
 
         /// <summary>
         /// Khoảng thời gian đến
         /// <para>Modified: 13/01/2022: Thay đổi từ Guid sang object Interval</para>
+        /// <para>Modified: 21/02/2022: Changed from IntvEnd -> IntvArrival</para>
         /// </summary>
         // public Guid IntvEndId { get; set; }
-        public Interval IntvEnd { get; set; }
+        public Interval IntvArrival { get; set; }
 
         /// <summary>
         /// Loại điểm ưa thích

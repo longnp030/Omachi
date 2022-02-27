@@ -21,33 +21,55 @@
                                         solo></v-combobox>
                         </v-col>
                         <v-col cols="12">
-                            <v-text-field label="Place"
-                                          :value="poi_name"
-                                          readonly></v-text-field>
-                        </v-col>
-                        <v-col cols="12">
                             <v-menu ref="menu"
                                     v-model="menu2"
                                     :close-on-content-click="false"
                                     :nudge-right="40"
-                                    :return-value.sync="starTime"
+                                    :return-value.sync="startTime"
                                     transition="scale-transition"
                                     offset-y
                                     max-width="290px"
                                     min-width="290px">
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-text-field label="StartTime*"
-                                                  v-model="starTime"
+                                    <v-text-field label="Start Time*"
+                                                  v-model="startTime"
                                                   :rules="[rules.required]"
                                                   readonly
                                                   v-bind="attrs"
                                                   v-on="on"></v-text-field>
                                 </template>
                                 <v-time-picker v-if="menu2"
-                                               v-model="starTime"
+                                               v-model="startTime"
                                                full-width
+                                               format="24hr"
                                                use-seconds
-                                               @click:second="$refs.menu.save(starTime)"></v-time-picker>
+                                               @click:second="$refs.menu.save(startTime)"></v-time-picker>
+                            </v-menu>
+                        </v-col>
+                        <v-col cols="12">
+                            <v-menu ref="menu_2"
+                                    v-model="menu2_2"
+                                    :close-on-content-click="false"
+                                    :nudge-right="40"
+                                    :return-value.sync="arrivalTime"
+                                    transition="scale-transition"
+                                    offset-y
+                                    max-width="290px"
+                                    min-width="290px">
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-text-field label="Arrival Time*"
+                                                  v-model="arrivalTime"
+                                                  :rules="[rules.required]"
+                                                  readonly
+                                                  v-bind="attrs"
+                                                  v-on="on"></v-text-field>
+                                </template>
+                                <v-time-picker v-if="menu2_2"
+                                               v-model="arrivalTime"
+                                               full-width
+                                               format="24hr"
+                                               use-seconds
+                                               @click:second="$refs.menu_2.save(arrivalTime)"></v-time-picker>
                             </v-menu>
                         </v-col>
                     </v-row>
@@ -106,6 +128,7 @@
             return {
                 findTripFormName: "Tìm chuyến đi chung",
                 menu2: false,
+                menu2_2: false,
                 dialog: false,
                 carRequest: {},
                 rules: {
@@ -117,7 +140,8 @@
 
                 poi: null,
                 poi_name: '',
-                starTime: '',
+                startTime: '',
+                arrivalTime: '', 
                 get_poi_url: "https://localhost:5001/POIs/poi_id",
 
                 matching_url: "https://localhost:5001/Users/user_id/matching",
@@ -130,9 +154,10 @@
             },
             confirmFindTrip() {
                 this.$refs.form.validate();
-                if (this.starTime) {
+                if (this.startTime) {
                     this.buildCarRequest();
-                    console.log(this.carRequest.StartTime);
+                    console.log(this.carRequest);
+                    
                     axios.post(
                         this.matching_url.replace('user_id', this.user_id),
                         JSON.parse(JSON.stringify(this.carRequest)),
@@ -142,7 +167,7 @@
                             }
                         }
                     ).then((res) => {
-                        console.log(res);
+                        console.log(res.data);
                         this.cancelFindTrip();
                     }).catch((res) => {
                         console.log(res);
@@ -153,11 +178,9 @@
                 this.carRequest.UserId = this.user_id;
                 this.carRequest.StartLat = this.startLat;
                 this.carRequest.StartLon = this.startLon;
-                this.carRequest.PointOfInterest = this.poi;
-                this.carRequest.StartTime = this.starTime;
+                this.carRequest.StartTime = this.startTime;
+                this.carRequest.ArrivalTime = this.arrivalTime;
                 this.carRequest.Timestamp = Date();
-                console.log(this.carRequest.StartTime);
-                console.log(this.carRequest);
             },
             filterCategory(selected_category) {
                 this.$emit('filterCategory', selected_category);

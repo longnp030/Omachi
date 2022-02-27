@@ -88,8 +88,8 @@
                                  :fillColor="'green'"
                                  :fillOpacity="0.8"
                                  :radius="8"
-                                 :lat-lng="[poi.Lat, poi.Lon]"
-                                 @click="chooseTripDest($event, poi.Id)">
+                                 :lat-lng="[poi.Lat, poi.Lon]">
+                                 //@click="chooseTripDest($event, poi.Id)">
                     <l-tooltip>
                         Name: {{poi.Name}}
                         <br />
@@ -409,18 +409,18 @@
                 }
             },
 
-            chooseTripDest(event, poiId) {
-                //console.log(event.target);
-                if (this.find_trip_dialog) {
-                    this.chosenPoi = {
-                        Lat: event.target._latlng.lat,
-                        Lon: event.target._latlng.lng
-                    };
-                    this.destPoiId = poiId;
-                    //console.log(event.target._latlng);
+            //chooseTripDest(event, poiId) {
+            //    //console.log(event.target);
+            //    if (this.find_trip_dialog) {
+            //        this.chosenPoi = {
+            //            Lat: event.target._latlng.lat,
+            //            Lon: event.target._latlng.lng
+            //        };
+            //        this.destPoiId = poiId;
+            //        //console.log(event.target._latlng);
                     
-                }
-            },
+            //    }
+            //},
         },
         watch: {
         },
