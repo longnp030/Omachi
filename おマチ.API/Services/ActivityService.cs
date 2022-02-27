@@ -101,10 +101,10 @@ namespace おマチ.API.Services
         public IEnumerable<Activity> GetUserActivities(Guid userId)
         {
             var activities = _context.Activity.Where(a => a.UserId == userId).OrderBy(a => a.StartTime).ToList();
-            if (activities.Count == 0)
-            {
-                throw new KeyNotFoundException("No activity found");
-            }
+            //if (activities.Count == 0)
+            //{
+            //    throw new KeyNotFoundException("No activity found");
+            //}
 
             return activities;
         }

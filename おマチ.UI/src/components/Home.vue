@@ -114,8 +114,8 @@
 
                 <l-circle-marker v-for="point in grid"
                                  :key="point.Id + 'tl'"
-                                 :color="'green'"
-                                 :fillColor="'green'"
+                                 :color="'tomato'"
+                                 :fillColor="'tomato'"
                                  :fillOpacity="0.8"
                                  :radius="8"
                                  :lat-lng="[point.TopLeftLat, point.TopLeftLon]">
@@ -125,8 +125,8 @@
                 </l-circle-marker>
                 <l-circle-marker v-for="point in grid"
                                  :key="point.Id + 'br'"
-                                 :color="'green'"
-                                 :fillColor="'green'"
+                                 :color="'tomato'"
+                                 :fillColor="'tomato'"
                                  :fillOpacity="0.8"
                                  :radius="8"
                                  :lat-lng="[point.BotRightLat, point.BotRightLon]">

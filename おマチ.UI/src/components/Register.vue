@@ -93,7 +93,7 @@
                         /** Redirect to complete user profile **/
                         this.$nextTick(function () {
                             this.$router.push({
-                                name: 'update-profile',
+                                name: 'home',
                                 params: {
                                     authToken: authToken,
                                     userId: userId,

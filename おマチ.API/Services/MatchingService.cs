@@ -171,9 +171,11 @@ namespace おマチ.API.Services
                     };
                     foundTrips.Add(foundTrip);
                     _context.FoundTrip.Add(foundTrip);
+                    _context.SaveChanges();
                 }
             }
 
+            //return foundTrips;
             return Matching(foundTrips);
         }
 
@@ -193,8 +195,8 @@ namespace おマチ.API.Services
                 var similarTrip = _context.FoundTrip.Where(t => t.UserId != foundTrip.UserId)
                                   .Where(t => t.StartIntervalId == foundTrip.StartIntervalId)
                                   .Where(t => t.StartCellId == foundTrip.StartCellId)
-                                  .Where(t => t.EndCellId == foundTrip.EndCellId)
-                                  .Where(t => t.Timestamp >= foundTrip.Timestamp.AddMinutes(-1)).ToList();
+                                  .Where(t => t.EndCellId == foundTrip.EndCellId).ToList();
+                                  //.Where(t => t.Timestamp >= foundTrip.Timestamp.AddMinutes(-1)).ToList();
                 similarTrips.AddRange(similarTrip);
             }
                 
