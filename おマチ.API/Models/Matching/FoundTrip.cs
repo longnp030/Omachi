@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace おマチ.API.Models.Matching
 {
-    public class MatchedTrip
+    public class FoundTrip
     {
         #region Attributes
         /// <summary>
@@ -14,17 +14,19 @@ namespace おマチ.API.Models.Matching
         /// </summary>
         public Guid Id { get; set; }
 
-        public Interval Interval { get; set; }
+        public Guid UserId { get; set; }
+
+        public Guid StartIntervalId { get; set; }
 
         /// <summary>
         /// Ô khởi hành
         /// </summary>
-        public Cell Start { get; set; }
+        public Guid StartCellId { get; set; }
 
         /// <summary>
         /// Ô điểm đến
         /// </summary>
-        public Cell End{ get; set; }
+        public Guid EndCellId { get; set; }
 
         public DateTime Timestamp { get; set; }
         #endregion Attributes

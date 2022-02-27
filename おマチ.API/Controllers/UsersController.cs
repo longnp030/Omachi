@@ -118,7 +118,7 @@ namespace おマチ.API.Controllers
         [HttpPost("{id}/matching")]
         public IActionResult Matching(Guid id, [FromBody] CarRequest carRequest)
         {
-            var lstCarpooling = _matchingService.Matching(id, carRequest);
+            var lstCarpooling = _matchingService.Finding(id, carRequest);
             return Ok(lstCarpooling);
         }
     }

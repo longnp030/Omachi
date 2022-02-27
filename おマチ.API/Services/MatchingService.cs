@@ -14,7 +14,7 @@ namespace おマチ.API.Services
 {
     public interface IMatchingService
     {
-        IEnumerable<MatchedTrip> Matching(Guid userId, CarRequest carRequest);
+        IEnumerable<MatchedTrip> Finding(Guid userId, CarRequest carRequest);
     }
 
     public class MatchingService : IMatchingService
@@ -41,7 +41,7 @@ namespace おマチ.API.Services
         /// <param name="userId">Mã định danh duy nhất của người dùng</param>
         /// <param name="carRequest">Thông tin yêu câu đi chung</param>
         /// <returns>Các chuyến đi chung khả thi</returns>
-        public IEnumerable<MatchedTrip> Matching(Guid userId, CarRequest carRequest)
+        public IEnumerable<MatchedTrip> Finding(Guid userId, CarRequest carRequest)
         {
             /*
              * Xác định
@@ -56,7 +56,7 @@ namespace おマチ.API.Services
             var timeWindow = TimeSpan.Parse("01:00:00");
 
             // Khởi tạo các chuyến đi chung có khả thi bằng list rỗng
-            var matchedTrips = new List<MatchedTrip>();
+            var foundTrips = new List<FoundTrip>();
 
             // Khởi tạo các điểm đón bằng list rỗng
             var pickups = new List<Cell>();
@@ -161,17 +161,56 @@ namespace おマチ.API.Services
                  */
                 foreach (Cell d in destinations)
                 {
-                    var matchedTrip = new MatchedTrip
+                    var foundTrip = new FoundTrip
                     {
-                        Id = userId.ToString(),
-                        Start = p,
-                        End = d
+                        UserId = userId,
+                        StartIntervalId = mappedCarRequest.IntvStart.Id,
+                        StartCellId = p.Id,
+                        EndCellId = d.Id,
+                        Timestamp = DateTime.Now
                     };
-                    matchedTrips.Add(matchedTrip);
-                    // _context.MatchedTrips.Add(matchedTrip);
+                    foundTrips.Add(foundTrip);
+                    _context.FoundTrip.Add(foundTrip);
                 }
             }
 
+            return Matching(foundTrips);
+        }
+
+        private IEnumerable<MatchedTrip> Matching(IEnumerable<FoundTrip> foundTrips)
+        {
+            // foundTrips: Current user's found trips
+            /* GOAL: Query other users' found trips 
+             *       that have same Start Interval, Start Cell, End Cell
+             *       and found time less than or greater than foundTrip's Timestamp one minute.
+             *       Combine those found trip into one MatchedTrip
+             *       -> Return that one MatchedTrip
+             */
+
+            var similarTrips = new List<FoundTrip>();
+            foreach (FoundTrip foundTrip in foundTrips)
+            {
+                var similarTrip = _context.FoundTrip.Where(t => t.UserId != foundTrip.UserId)
+                                  .Where(t => t.StartIntervalId == foundTrip.StartIntervalId)
+                                  .Where(t => t.StartCellId == foundTrip.StartCellId)
+                                  .Where(t => t.EndCellId == foundTrip.EndCellId)
+                                  .Where(t => t.Timestamp >= foundTrip.Timestamp.AddMinutes(-1)).ToList();
+                similarTrips.AddRange(similarTrip);
+            }
+                
+            var matchedTrips = new List<MatchedTrip>();
+
+            foreach (FoundTrip similarTrip in similarTrips)
+            {
+                var matchedTrip = new MatchedTrip
+                {
+                    Interval = _context.Interval.Find(similarTrip.StartIntervalId),
+                    Start = _context.Cell.Find(similarTrip.StartCellId),
+                    End = _context.Cell.Find(similarTrip.EndCellId),
+                    Timestamp = DateTime.Now
+                };
+                matchedTrips.Add(matchedTrip);
+            }
             return matchedTrips;
         }
 
@@ -183,7 +222,7 @@ namespace おマチ.API.Services
         /// </summary>
         /// <param name="userId">Mã định danh duy nhất của người dùng</param>
         /// <returns>Chuỗi hoạt động thường ngày được ánh xạ</returns>
-        IEnumerable<MappedActivity> GetMappedActivities(Guid userId)
+        private IEnumerable<MappedActivity> GetMappedActivities(Guid userId)
         {
             var activities = _context.Activity.Where(act => act.UserId == userId).OrderBy(act => act.StartTime).ToList();
             var setOfIntvals = _context.Interval.ToList();
@@ -234,7 +273,7 @@ namespace おマチ.API.Services
         /// <param name="userId">Mã định danh duy nhất của người dùng</param>
         /// <param name="carRequest">Yêu cầu đi chung xe</param>
         /// <returns>Yêu cầu đi chung xe được ánh xạ</returns>
-        MappedCarRequest GetMappedCarRequest(Guid userId, CarRequest carRequest)
+        private MappedCarRequest GetMappedCarRequest(Guid userId, CarRequest carRequest)
         {
             var activities = _context.Activity.Where(act => act.UserId == userId).OrderBy(act => act.StartTime).ToList();
             var setOfIntvals = _context.Interval.ToList();
@@ -294,7 +333,7 @@ namespace おマチ.API.Services
         /// </summary>
         /// <param name="category">Loại điểm ưa thích</param>
         /// <returns>Lưới ngữ nghĩa</returns>
-        IEnumerable<SemanticCell> GetSemanticGrid(String category)
+        private IEnumerable<SemanticCell> GetSemanticGrid(String category)
         {
             var POIs = _context.PointOfInterest.Where(poi => poi.Category == category).ToList();
             var setOfIntvals = _context.Interval.ToList();

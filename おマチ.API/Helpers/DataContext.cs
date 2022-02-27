@@ -30,5 +30,6 @@ namespace おマチ.API.Helpers
         public DbSet<Cell> Cell { get; set; }
         public DbSet<Interval> Interval { get; set; }
         public DbSet<PointOfInterest> PointOfInterest { get; set; }
+        public DbSet<FoundTrip> FoundTrip { get; set; }
     }
 }
