@@ -14,17 +14,21 @@ namespace おマチ.API.Models.Matching
         /// </summary>
         public Guid Id { get; set; }
 
-        public Interval Interval { get; set; }
+        public String Users { get; set; }
+
+        public Interval StartInterval { get; set; }
+
+        public String ArrivalTime { get; set; }
 
         /// <summary>
         /// Ô khởi hành
         /// </summary>
-        public Cell Start { get; set; }
+        public Cell StartCell { get; set; }
 
         /// <summary>
         /// Ô điểm đến
         /// </summary>
-        public Cell End{ get; set; }
+        public Cell ArrivalCell { get; set; }
 
         public DateTime Timestamp { get; set; }
         #endregion Attributes

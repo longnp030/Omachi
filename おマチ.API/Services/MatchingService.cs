@@ -15,8 +15,8 @@ namespace おマチ.API.Services
 {
     public interface IMatchingService
     {
-        //IEnumerable<MatchedTrip> Finding(Guid userId, CarRequest carRequest);
-        IEnumerable<FoundTrip> Finding(Guid userId, CarRequest carRequest);
+        IEnumerable<MatchedTrip> Finding(Guid userId, CarRequest carRequest);
+        //IEnumerable<FoundTrip> Finding(Guid userId, CarRequest carRequest);
     }
 
     public class MatchingService : IMatchingService
@@ -43,8 +43,8 @@ namespace おマチ.API.Services
         /// <param name="userId">Mã định danh duy nhất của người dùng</param>
         /// <param name="carRequest">Thông tin yêu câu đi chung</param>
         /// <returns>Các chuyến đi chung khả thi</returns>
-        //public IEnumerable<MatchedTrip> Finding(Guid userId, CarRequest carRequest)
-        public IEnumerable<FoundTrip> Finding(Guid userId, CarRequest carRequest)
+        public IEnumerable<MatchedTrip> Finding(Guid userId, CarRequest carRequest)
+        //public IEnumerable<FoundTrip> Finding(Guid userId, CarRequest carRequest)
 
         {
             /*
@@ -153,7 +153,8 @@ namespace おマチ.API.Services
                         && ToTime(mappedCarRequest.IntvStart.Start) - timeWindow <= ToTime(mappedActivity.Intv.Start)
                         && ToTime(mappedActivity.Intv.Start) <= ToTime(mappedCarRequest.IntvArrival.Start) + timeWindow
                         // Lúc đến POI thì hoạt động ở ô đó chưa kết thúc
-                        && ToTime(mappedCarRequest.IntvArrival.Start) < ToTime(mappedActivity.Intv.End))
+                        //&& ToTime(mappedCarRequest.IntvArrival.Start) < ToTime(mappedActivity.Intv.End)
+                        )
                     {
                         // destinations.Add(_context.Cells.Find(mappedActivity.CellId)); // Bản gốc
                         destinations.Add(mappedActivity.Cell); // Sửa MappedActivity
@@ -173,6 +174,7 @@ namespace おマチ.API.Services
                     {
                         UserId = userId,
                         StartIntervalId = mappedCarRequest.IntvStart.Id,
+                        ArrivalTime = carRequest.ArrivalTime,
                         StartCellId = p.Id,
                         EndCellId = d.Id,
                         Timestamp = DateTime.Now
@@ -183,8 +185,8 @@ namespace おマチ.API.Services
                 }
             }
 
-            return foundTrips;
-            //return Matching(foundTrips);
+            //return foundTrips;
+            return Matching(foundTrips);
         }
 
         private IEnumerable<MatchedTrip> Matching(IEnumerable<FoundTrip> foundTrips)
@@ -196,31 +198,62 @@ namespace おマチ.API.Services
              *       Combine those found trip into one MatchedTrip
              *       -> Return that one MatchedTrip
              */
-
-            var similarTrips = new List<FoundTrip>();
-            foreach (FoundTrip foundTrip in foundTrips)
-            {
-                var _similarTrips = _context.FoundTrip.Where(t => t.UserId != foundTrip.UserId)
-                                  .Where(t => t.StartIntervalId == foundTrip.StartIntervalId)
-                                  .Where(t => t.StartCellId == foundTrip.StartCellId)
-                                  .Where(t => t.EndCellId == foundTrip.EndCellId).ToList();
-                                  //.Where(t => t.Timestamp >= foundTrip.Timestamp.AddMinutes(-1)).ToList();
-                similarTrips.AddRange(_similarTrips);
-            }
-                
+            
             var matchedTrips = new List<MatchedTrip>();
 
-            foreach (FoundTrip similarTrip in similarTrips)
+            foreach (FoundTrip foundTrip in foundTrips)
             {
+                var similarTrips = _context.FoundTrip.Where(t => t.UserId != foundTrip.UserId)
+                                  .Where(t => t.StartCellId == foundTrip.StartCellId)
+                                  .Where(t => t.EndCellId == foundTrip.EndCellId)
+                                  .Where(t => t.StartIntervalId == foundTrip.StartIntervalId)
+                                  //.Where(t => ToTime(t.ArrivalTime) <= ToTime(foundTrip.ArrivalTime) - ToTime("00:15:00")
+                                  //            || ToTime(t.ArrivalTime) >= ToTime(foundTrip.ArrivalTime) + ToTime("00:15:00"))
+                                  //.Where(t => t.Timestamp >= foundTrip.Timestamp.AddMinutes(-1))
+                                  .ToList();
+
+                var users = foundTrip.UserId.ToString();
+                var minArrivalTime = ToTime(foundTrip.ArrivalTime);
+                var maxArrivalTime = ToTime(foundTrip.ArrivalTime);
+                foreach (FoundTrip similarTrip in similarTrips)
+                {
+                    //if (ToTime(foundTrip.ArrivalTime) - ToTime("00:15:00") <= ToTime(similarTrip.ArrivalTime)
+                    //    && ToTime(similarTrip.ArrivalTime) <= ToTime(foundTrip.ArrivalTime) + ToTime("00:15:00"))
+                    //{
+                    //    users = users + ", " + similarTrip.UserId.ToString();
+                    //    if (ToTime(similarTrip.ArrivalTime) < minArrivalTime)
+                    //    {
+                    //        minArrivalTime = ToTime(similarTrip.ArrivalTime);
+                    //    }
+                    //    if (ToTime(similarTrip.ArrivalTime) > maxArrivalTime)
+                    //    {
+                    //        maxArrivalTime = ToTime(similarTrip.ArrivalTime);
+                    //    }
+                    //}
+                    users = users + ", " + similarTrip.UserId.ToString();
+                    if (ToTime(similarTrip.ArrivalTime) < minArrivalTime)
+                    {
+                        minArrivalTime = ToTime(similarTrip.ArrivalTime);
+                    }
+                    if (ToTime(similarTrip.ArrivalTime) > maxArrivalTime)
+                    {
+                        maxArrivalTime = ToTime(similarTrip.ArrivalTime);
+                    }
+                }
+
                 var matchedTrip = new MatchedTrip
                 {
-                    Interval = _context.Interval.Find(similarTrip.StartIntervalId),
-                    Start = _context.Cell.Find(similarTrip.StartCellId),
-                    End = _context.Cell.Find(similarTrip.EndCellId),
-                    Timestamp = DateTime.Now
+                    Users = users,
+                    StartInterval = _context.Interval.Find(foundTrip.StartIntervalId),
+                    ArrivalTime = minArrivalTime.ToString() + " - " + maxArrivalTime.ToString(), 
+                    StartCell = _context.Cell.Find(foundTrip.StartCellId),
+                    ArrivalCell = _context.Cell.Find(foundTrip.EndCellId),
+                    Timestamp = foundTrip.Timestamp
                 };
+
                 matchedTrips.Add(matchedTrip);
             }
+
             return matchedTrips;
         }
 

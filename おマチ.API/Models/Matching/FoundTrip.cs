@@ -18,6 +18,8 @@ namespace おマチ.API.Models.Matching
 
         public Guid StartIntervalId { get; set; }
 
+        public String ArrivalTime { get; set; }
+
         /// <summary>
         /// Ô khởi hành
         /// </summary>
