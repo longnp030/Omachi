@@ -13,7 +13,7 @@
                     <v-card-text>
                         <div>Start time: {{matchedTrips_to_mutate.StartTime}}</div>
                         <div>Arrival time: {{matchedTrips_to_mutate.ArrivalTime}}</div>
-                        <div></div>
+                        <div><!-- TODO: add api get user by id to show avatar and name --></div>
                     </v-card-text>
 
                     <v-card-actions>
