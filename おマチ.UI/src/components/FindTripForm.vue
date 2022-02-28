@@ -143,7 +143,6 @@
                 startTime: '',
                 arrivalTime: '', 
                 get_poi_url: "https://localhost:5001/POIs/poi_id",
-
                 matching_url: "https://localhost:5001/Users/user_id/matching",
             };
         },
@@ -175,12 +174,15 @@
                 }
             },
             buildCarRequest() {
-                this.carRequest.UserId = this.user_id;
-                this.carRequest.StartLat = this.startLat;
-                this.carRequest.StartLon = this.startLon;
-                this.carRequest.StartTime = this.startTime;
-                this.carRequest.ArrivalTime = this.arrivalTime;
-                this.carRequest.Timestamp = Date();
+                this.carRequest = {
+                    UserId: this.user_id,
+                    StartLat: this.startLat,
+                    StartLon: this.startLon,
+                    StartTime: this.startTime,
+                    ArrivalTime: this.arrivalTime,
+                    Category: this.selected_category,
+                    Timestamp: Date()
+                }
             },
             filterCategory(selected_category) {
                 this.$emit('filterCategory', selected_category);

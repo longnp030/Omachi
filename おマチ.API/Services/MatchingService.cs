@@ -103,7 +103,6 @@ namespace おマチ.API.Services
                 var destinations = new List<Cell>();
 
                 // Lặp từng hoạt động trong các hoạt động thường ngày được ánh xạ
-                //var idx = 0;
                 foreach (MappedActivity mappedActivity in mappedActivities)
                 {
                     /*
@@ -125,7 +124,8 @@ namespace おマチ.API.Services
                          * Sửa MappedActivity
                          */
                         if (mappedActivity.Cell.Id == sc.CellId
-                            && sc.StartTime <= ToTime(mappedActivity.Intv.Start) && ToTime(mappedActivity.Intv.End) <= sc.EndTime)
+                            && sc.StartTime <= ToTime(mappedActivity.Intv.Start)
+                            && ToTime(mappedActivity.Intv.End) <= sc.EndTime)
                         {
                             anyActExistsInSemanticGrid = true;
                             break;
@@ -149,16 +149,15 @@ namespace おマチ.API.Services
                     /*
                      * Sửa MappedActivity -> Sửa MappedCarRequest
                      */
-                    if (anyActExistsInSemanticGrid// && idx <= mappedActivities.Count() - 2
+                    if (anyActExistsInSemanticGrid
                         && ToTime(mappedCarRequest.IntvStart.Start) - timeWindow <= ToTime(mappedActivity.Intv.Start)
-                        && ToTime(mappedActivity.Intv.Start) <= ToTime(mappedCarRequest.IntvArrival.Start) + timeWindow)
-                        //&& ToTime(mappedCarRequest.IntvArrival.Start) < ToTime(mappedActivities.ElementAt(idx+1).Intv.Start))
+                        && ToTime(mappedActivity.Intv.Start) <= ToTime(mappedCarRequest.IntvArrival.Start) + timeWindow
+                        // Lúc đến POI thì hoạt động ở ô đó chưa kết thúc
+                        && ToTime(mappedCarRequest.IntvArrival.Start) < ToTime(mappedActivity.Intv.End))
                     {
                         // destinations.Add(_context.Cells.Find(mappedActivity.CellId)); // Bản gốc
                         destinations.Add(mappedActivity.Cell); // Sửa MappedActivity
                     }
-
-                    //idx++;
                 }
 
                 /*
@@ -166,6 +165,7 @@ namespace おマチ.API.Services
                  * |lstCarpooling| = |p|x|d|
                  * 
                  * Chưa thêm code add vào CSDL
+                 * Modified: 27/02/2022: Added code to insert into DB
                  */
                 foreach (Cell d in destinations)
                 {
