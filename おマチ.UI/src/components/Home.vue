@@ -62,7 +62,8 @@
                                       :startLat="center[0]"
                                       :startLon="center[1]"
                                       :poiId="destPoiId"
-                                      @filterCategory="filterCategory" />
+                                      @filterCategory="filterCategory"
+                                      @notifyMatchedTrips="notifyMatchedTrips"/>
                     </v-dialog>
                 </l-control>
                 <l-circle-marker v-for="marker in markers"
@@ -136,6 +137,10 @@
                 </l-circle-marker>
             </l-map>
         </div>
+
+        <MatchedTripsDialog v-if="matchedTrips"
+                            :jwt_token="jwtToken"
+                            :matchedTrips="matchedTrips"/>
     </div>
 </template>
 
@@ -144,6 +149,7 @@
     import NavigationPanel from "../components/NavigationPanel.vue";
     import ActivityForm from "../components/ActivityForm.vue";
     import FindTripForm from "../components/FindTripForm.vue";
+    import MatchedTripsDialog from "../components/MatchedTripsDialog.vue";
 
     export default {
         name: 'Home',
@@ -151,6 +157,7 @@
             NavigationPanel,
             ActivityForm,
             FindTripForm,
+            MatchedTripsDialog,
         },
         data() {
             return {
@@ -205,6 +212,9 @@
                 chosenPoi: null,
                 grid: [],
                 grid_get_url: "https://localhost:5001/POIs/Grid",
+
+                // for matched trips
+                matchedTrips: null,
             };
         },
         props: {
@@ -263,9 +273,11 @@
                 console.log(`Latitude : ${this.curr_loc.latitude}`);
                 console.log(`Longitude: ${this.curr_loc.longitude}`);
                 console.log(`More or less ${this.curr_loc.accuracy} meters.`);
+                this.$toast.success(`Your location is the red circle, ${this.curr_loc.accuracy} meters error.`);
             },
             curr_loc_error(err) {
                 console.warn(`ERROR(${err.code}): ${err.message}`);
+                this.$toast.error("Error getting your location.");
             },
             async getCurrLoc() {
                 navigator.geolocation.getCurrentPosition(this.curr_loc_success, this.curr_loc_error, this.curr_loc_options);
@@ -292,9 +304,11 @@
                     }
                 ).then((res) => {
                     this.activities = res.data;
+                    this.$toast.success("Get activities successfully.");
                     //console.log(this.activities);
                 }).catch((res) => {
                     console.log(res);
+                    this.$toast.error("Failed to get activities.");
                 });
             },
 
@@ -421,6 +435,10 @@
                     
             //    }
             //},
+
+            notifyMatchedTrips(matchedTrips) {
+                this.matchedTrips = matchedTrips;
+            },
         },
         watch: {
         },

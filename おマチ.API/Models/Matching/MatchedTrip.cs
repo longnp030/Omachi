@@ -16,21 +16,23 @@ namespace おマチ.API.Models.Matching
 
         public String Users { get; set; }
 
-        public Interval StartInterval { get; set; }
+        public String StartTime { get; set; }
 
         public String ArrivalTime { get; set; }
 
         /// <summary>
         /// Ô khởi hành
         /// </summary>
-        public Cell StartCell { get; set; }
+        public Guid StartCellId { get; set; }
 
         /// <summary>
         /// Ô điểm đến
         /// </summary>
-        public Cell ArrivalCell { get; set; }
+        public Guid ArrivalCellId { get; set; }
 
         public DateTime Timestamp { get; set; }
+
+        public Boolean Status { get; set; }
         #endregion Attributes
     }
 }

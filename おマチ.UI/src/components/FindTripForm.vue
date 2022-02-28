@@ -144,6 +144,8 @@
                 arrivalTime: '', 
                 get_poi_url: "https://localhost:5001/POIs/poi_id",
                 matching_url: "https://localhost:5001/Users/user_id/matching",
+
+                //matchedTrips: null,
             };
         },
         methods: {
@@ -167,6 +169,8 @@
                         }
                     ).then((res) => {
                         console.log(res.data);
+                        //this.matchedTrips = res.data;
+                        this.$emit('notifyMatchedTrips', res.data);
                         this.cancelFindTrip();
                     }).catch((res) => {
                         console.log(res);

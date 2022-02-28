@@ -31,5 +31,6 @@ namespace おマチ.API.Helpers
         public DbSet<Interval> Interval { get; set; }
         public DbSet<PointOfInterest> PointOfInterest { get; set; }
         public DbSet<FoundTrip> FoundTrip { get; set; }
+        public DbSet<MatchedTrip> MatchedTrip { get; set; }
     }
 }

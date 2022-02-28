@@ -19,6 +19,24 @@ import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 /** End Vue router **/
 
+/** Vue Toastification **/
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
+
+const options = {
+    position: "bottom-left",
+    closeOnClick: false,
+    pauseOnFocusLoss: true,
+    pauseOnHover: true,
+    draggable: true,
+    draggablePercent: 2,
+    showCloseButtonOnHover: true,
+    closeButton: "button",
+    transition: "Vue-Toastification__fade",
+}
+Vue.use(Toast, options);
+/** End Vue Toastification**/
+
 /** Vue Leaflet **/
 import {
     LMap,

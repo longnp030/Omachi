@@ -163,9 +163,11 @@
                             }
                         ).then((res) => {
                             console.log(res);
+                            this.$toast.success("Added activity successfully.");
                             this.cancelActivity();
                         }).catch((res) => {
-                            console.log(res)
+                            console.log(res);
+                            this.$toast.error("Failed to add activity.");
                         });
                     }
                 } else {
@@ -179,9 +181,11 @@
                         }
                     ).then((res) => {
                         console.log(res);
+                        this.$toast.success("Edit activity successfully.");
                         this.cancelActivity();
                     }).catch((res) => {
-                        console.log(res)
+                        console.log(res);
+                        this.$toast.error("Failed to edit activity.");
                     });
                 }
             },
@@ -197,9 +201,11 @@
                     }
                 ).then((res) => {
                     console.log(res);
+                    this.$toast.success("Delete activity successfully.");
                     this.cancelActivity();
                 }).catch((res) => {
-                    console.log(res)
+                    console.log(res);
+                    this.$toast.error("Failed to delete activity.");
                 });
             },
         },

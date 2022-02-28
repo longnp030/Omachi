@@ -244,14 +244,18 @@ namespace おマチ.API.Services
                 var matchedTrip = new MatchedTrip
                 {
                     Users = users,
-                    StartInterval = _context.Interval.Find(foundTrip.StartIntervalId),
+                    StartTime = _context.Interval.Find(foundTrip.StartIntervalId).Start.ToString() + " - " + _context.Interval.Find(foundTrip.StartIntervalId).End.ToString(),
                     ArrivalTime = minArrivalTime.ToString() + " - " + maxArrivalTime.ToString(), 
-                    StartCell = _context.Cell.Find(foundTrip.StartCellId),
-                    ArrivalCell = _context.Cell.Find(foundTrip.EndCellId),
-                    Timestamp = foundTrip.Timestamp
+                    StartCellId = foundTrip.StartCellId,
+                    ArrivalCellId = foundTrip.EndCellId,
+                    Timestamp = DateTime.Now
                 };
 
                 matchedTrips.Add(matchedTrip);
+                _context.MatchedTrip.Add(matchedTrip);
+                _context.FoundTrip.Remove(foundTrip);
+                _context.FoundTrip.RemoveRange(similarTrips);
+                _context.SaveChanges();
             }
 
             return matchedTrips;

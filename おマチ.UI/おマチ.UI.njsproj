@@ -43,6 +43,9 @@
     <Content Include="src\components\Home.vue" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="src\components\MatchedTripsDialog.vue">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\components\NavigationPanel.vue">
       <SubType>Code</SubType>
     </Content>
@@ -59,6 +62,9 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\css\Main.css">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\css\MatchedTripsDialog.css">
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\css\NavigationPanel.css">
