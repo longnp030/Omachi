@@ -141,11 +141,15 @@
         <MatchedTripsDialog v-if="matchedTrips"
                             :jwt_token="jwtToken"
                             :matchedTrips="matchedTrips"/>
+
+        <ChatDialog :user_id="userId"
+                    :jwt_token="jwtToken"/>
     </div>
 </template>
 
 <script>
     import axios from "axios";
+    import ChatDialog from "../components/ChatDialog.vue";
     import NavigationPanel from "../components/NavigationPanel.vue";
     import ActivityForm from "../components/ActivityForm.vue";
     import FindTripForm from "../components/FindTripForm.vue";
@@ -158,6 +162,7 @@
             ActivityForm,
             FindTripForm,
             MatchedTripsDialog,
+            ChatDialog,
         },
         data() {
             return {

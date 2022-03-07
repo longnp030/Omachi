@@ -66,6 +66,11 @@ Icon.Default.mergeOptions({
 });
 /** End Vue Leaflet **/
 
+/** Chat Socket **/
+import ChatSocket from './plugins/chat';
+Vue.use(ChatSocket);
+/** End Chat Socket **/
+
 new Vue({
     router,
     vuetify,

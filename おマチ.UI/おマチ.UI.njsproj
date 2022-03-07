@@ -37,6 +37,18 @@
     <Content Include="src\components\ActivityForm.vue">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\components\ChatDialog.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\ChatForm.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\ChatList.vue">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\ChatMessage.vue">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\components\FindTripForm.vue">
       <SubType>Code</SubType>
     </Content>
@@ -73,6 +85,9 @@
     <Content Include="src\css\Register.css">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\plugins\chat\index.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\plugins\router\index.js">
       <SubType>Code</SubType>
     </Content>
@@ -88,6 +103,7 @@
     <Folder Include="src\css\" />
     <Folder Include="src\assets\" />
     <Folder Include="src\plugins\" />
+    <Folder Include="src\plugins\chat\" />
     <Folder Include="src\plugins\vuetify\" />
     <Folder Include="src\plugins\router\" />
   </ItemGroup>

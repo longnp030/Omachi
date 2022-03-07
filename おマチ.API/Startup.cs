@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using おマチ.API.Authorization;
 using おマチ.API.Helpers;
+using おマチ.API.Hubs;
 using おマチ.API.Services;
 
 namespace おマチ.API
@@ -44,13 +45,15 @@ namespace おマチ.API
                 options.AddPolicy(name: MyAllowSpecificOrigins,
                                   builder =>
                                   {
-                                      builder.AllowAnyOrigin()
+                                      builder.WithOrigins("http://localhost:8080")
                                              .AllowAnyMethod()
-                                             .AllowAnyHeader();
+                                             .AllowAnyHeader()
+                                             .AllowCredentials();
                                   });
             });
 
             services.AddControllers();
+            services.AddSignalR(); // Added 06/03/2022
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "おマチ.API", Version = "v1" });
@@ -104,7 +107,10 @@ namespace おマチ.API
             // custom jwt auth middleware
             app.UseMiddleware<JwtMiddleware>();
 
-            app.UseEndpoints(x => x.MapControllers());
+            app.UseEndpoints(x => {
+                x.MapControllers();
+                x.MapHub<ChatHub>("/chatsocket"); // https://localhost:5001/chatsocket
+            });
         }
     }
 }
