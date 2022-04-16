@@ -76,9 +76,6 @@ namespace おマチ.API.Services
             // map model to new user object
             var user = _mapper.Map<User>(model);
 
-            // send notification email
-            new EmailService(user.Email, "おマチへようこそ！", "アカウントご登録ありがとうございます！　楽しい時間をお過ごしできますように！").Send();
-
             // hash password
             user.PasswordHash = BCryptNet.HashPassword(model.Password);
 
@@ -95,12 +92,6 @@ namespace おマチ.API.Services
         public void Update(Guid id, UpdateRequest model)
         {
             var user = GetUser(id);
-
-            // hash password if it was entered
-            if (!String.IsNullOrEmpty(model.Password))
-            {
-                user.PasswordHash = BCryptNet.HashPassword(model.Password);
-            }
 
             // copy model to user and save
             _mapper.Map(model, user);

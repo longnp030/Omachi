@@ -33,18 +33,7 @@
 <script>
     import axios from 'axios';
     export default {
-        props: {
-            user_id: {
-                type: String,
-                required: true,
-                default: ''
-            },
-            jwt_token: {
-                type: String,
-                required: true,
-                default: '',
-            },
-        },
+        props: ["userId", "jwtToken"],
         data() {
             return {
                 msg: "",
@@ -56,7 +45,7 @@
                 if (this.msg) {
                     // this.$emit("submitMessage", this.msg);
                     var message = {
-                        'UserId': this.user_id,
+                        'UserId': this.userId,
                         'Message': this.msg,
                     };
                     axios.post(
@@ -64,7 +53,7 @@
                         JSON.parse(JSON.stringify(message)),
                         {
                             headers: {
-                                Authorization: `Bearer ${this.jwt_token}`
+                                Authorization: `Bearer ${this.jwtToken}`
                             }
                         }
                     ).then((res) => {
@@ -86,7 +75,7 @@
         justify-content: space-between;
         padding: 6px 12px;
         background: #ffffff;
-        border-radius: 4px;
+        border-radius: 0 0 4px 4px;
         box-shadow: 0px -5px 30px rgba(0, 0, 0, 0.05);
         background-color: #006688;
     }
@@ -94,8 +83,11 @@
     .form__input {
         border: none;
         font-size: 16px;
-        color: #ffffff;
         width: calc(100% - 60px);
+    }
+
+    .form__input::placeholder {
+        color: #ffffff;
     }
 
     .form__input:focus {

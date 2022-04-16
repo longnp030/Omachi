@@ -11,14 +11,16 @@
                             <v-combobox id="poi-filter"
                                         v-model="selected_category_for_mutation"
                                         :items="categories_for_mutation"
-                                        label="Category"
+                                        label="Lọc điểm ưa thích"
+                                        :rules="[rules.required]"
                                         @input="filterCategory(selected_category_for_mutation)"
                                         clearable
                                         dense
                                         hide-selected
                                         persistent-hint
                                         small-chips
-                                        solo></v-combobox>
+                                        solo
+                                        required></v-combobox>
                         </v-col>
                         <v-col cols="12">
                             <v-menu ref="menu"
@@ -31,7 +33,7 @@
                                     max-width="290px"
                                     min-width="290px">
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-text-field label="Start Time*"
+                                    <v-text-field label="Thời gian xuất phát*"
                                                   v-model="startTime"
                                                   :rules="[rules.required]"
                                                   readonly
@@ -57,7 +59,7 @@
                                     max-width="290px"
                                     min-width="290px">
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-text-field label="Arrival Time*"
+                                    <v-text-field label="Thời gian đến*"
                                                   v-model="arrivalTime"
                                                   :rules="[rules.required]"
                                                   readonly
@@ -80,12 +82,12 @@
                 <v-btn color="blue darken-1"
                        text
                        @click="cancelFindTrip">
-                    Cancel
+                    Hủy
                 </v-btn>
                 <v-btn color="blue darken-1"
                        text
                        @click="confirmFindTrip">
-                    Find
+                    Tìm
                 </v-btn>
             </v-card-actions>
         </v-form>
@@ -132,7 +134,7 @@
                 dialog: false,
                 carRequest: {},
                 rules: {
-                    required: value => !!value || 'Required.',
+                    required: value => !!value || 'Bắt buộc.',
                 },
                 // 2 data để mutate trong con, dùng làm v-model để hiển thị cate trong con
                 selected_category_for_mutation: null,

@@ -61,6 +61,9 @@
     <Content Include="src\components\NavigationPanel.vue">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\components\Profile.vue">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\components\Register.vue">
       <SubType>Code</SubType>
     </Content>
@@ -70,19 +73,10 @@
     <Content Include="src\css\Home.css">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="src\css\Login.css">
-      <SubType>Code</SubType>
-    </Content>
     <Content Include="src\css\Main.css">
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\css\MatchedTripsDialog.css">
-      <SubType>Code</SubType>
-    </Content>
-    <Content Include="src\css\NavigationPanel.css">
-      <SubType>Code</SubType>
-    </Content>
-    <Content Include="src\css\Register.css">
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\plugins\chat\index.js">

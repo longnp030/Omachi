@@ -17,14 +17,7 @@ namespace おマチ.API.Hubs
     #region Main Hub Class
     public class ChatHub : Hub<IChatHub>
     {
-        public async Task JoinChatGroup(Guid matchedTripId)
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, matchedTripId.ToString());
-        }
-        public Task SendMessage(Guid userId, String message)
-        {
-            return Clients.All.SendMessage(userId, message);
-        }
+        
     }
     #endregion Main Hub Class
 }

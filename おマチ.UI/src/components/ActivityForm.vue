@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-card class="act-form">
         <v-form ref="form">
             <v-card-title>
                 <span class="text-h5">{{actFormName}}</span>
@@ -8,7 +8,7 @@
                 <v-container>
                     <v-row>
                         <v-col cols="12">
-                            <v-text-field label="Name*"
+                            <v-text-field label="Tên hoạt động*"
                                           :rules="[rules.required]"
                                           v-model="activity.Name"
                                           required></v-text-field>
@@ -25,7 +25,7 @@
                                     min-width="290px">
                                 <template v-slot:activator="{ on, attrs }">
                                     <v-text-field :rules="[rules.required]"
-                                                  label="StartTime*"
+                                                  label="Thời gian bắt đầu*"
                                                   v-model="activity.StartTime"
                                                   readonly
                                                   v-bind="attrs"
@@ -48,28 +48,28 @@
                           v-if="formMode == 1"
                           max-width="290">
                     <template v-slot:activator="{ on, attrs }">
-                        <v-btn color="warning"
+                        <v-btn color="red"
                                dark
                                v-bind="attrs"
                                v-on="on">
-                            Delete
+                            Xóa
                         </v-btn>
                     </template>
                     <v-card>
                         <v-card-title class="text-h5">
-                            Do you want to delete activity?
+                            Bạn có chắc muốn xóa không?
                         </v-card-title>
                         <v-card-actions>
                             <v-spacer></v-spacer>
                             <v-btn color="green darken-1"
                                    text
                                    @click="dialog = false">
-                                Disagree
+                                Không
                             </v-btn>
                             <v-btn color="green darken-1"
                                    text
                                    @click="deleteActivity">
-                                Agree
+                                Có
                             </v-btn>
                         </v-card-actions>
                     </v-card>
@@ -78,12 +78,12 @@
                 <v-btn color="blue darken-1"
                        text
                        @click="cancelActivity">
-                    Close
+                    Hủy
                 </v-btn>
                 <v-btn color="blue darken-1"
                        text
                        @click="saveActivity">
-                    Save
+                    Lưu
                 </v-btn>
             </v-card-actions>
         </v-form>
@@ -101,7 +101,7 @@
             return {
                 actFormName: "Thêm mới hoạt động",
                 rules: {
-                    required: value => !!value || 'Required.',
+                    required: value => !!value || 'Bắt buộc.',
                 },
                 menu2: false,
                 dialog: false,
@@ -163,11 +163,11 @@
                             }
                         ).then((res) => {
                             console.log(res);
-                            this.$toast.success("Added activity successfully.");
+                            this.$toast.success("Thêm thành công.");
                             this.cancelActivity();
                         }).catch((res) => {
                             console.log(res);
-                            this.$toast.error("Failed to add activity.");
+                            this.$toast.error("Thêm thất bại.");
                         });
                     }
                 } else {
@@ -181,11 +181,11 @@
                         }
                     ).then((res) => {
                         console.log(res);
-                        this.$toast.success("Edit activity successfully.");
+                        this.$toast.success("Sửa thành công.");
                         this.cancelActivity();
                     }).catch((res) => {
                         console.log(res);
-                        this.$toast.error("Failed to edit activity.");
+                        this.$toast.error("Sửa thất bại.");
                     });
                 }
             },
@@ -201,11 +201,11 @@
                     }
                 ).then((res) => {
                     console.log(res);
-                    this.$toast.success("Delete activity successfully.");
+                    this.$toast.success("Xóa thành công.");
                     this.cancelActivity();
                 }).catch((res) => {
                     console.log(res);
-                    this.$toast.error("Failed to delete activity.");
+                    this.$toast.error("Xóa thất bại.");
                 });
             },
         },

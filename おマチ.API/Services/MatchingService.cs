@@ -245,7 +245,7 @@ namespace おマチ.API.Services
                 {
                     Users = users,
                     StartTime = _context.Interval.Find(foundTrip.StartIntervalId).Start.ToString() + " - " + _context.Interval.Find(foundTrip.StartIntervalId).End.ToString(),
-                    ArrivalTime = minArrivalTime.ToString() + " - " + maxArrivalTime.ToString(), 
+                    ArrivalTime = minArrivalTime.ToString() + " - " + maxArrivalTime.ToString(),
                     StartCellId = foundTrip.StartCellId,
                     ArrivalCellId = foundTrip.EndCellId,
                     Timestamp = DateTime.Now

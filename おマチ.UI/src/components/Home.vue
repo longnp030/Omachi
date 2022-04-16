@@ -1,6 +1,6 @@
 <template>
     <div id="home" data-app>
-        <div id="nav"><NavigationPanel @logout="logout" /></div>
+        <div id="nav"><NavigationPanel @logout="logout" :user="user" :jwtToken="jwtToken"/></div>
 
         <div id="map">
             <l-map :zoom="zoom" :center="center" @click="addMarker">
@@ -16,7 +16,7 @@
                     <v-combobox id="poi-filter"
                                 v-model="selected_category"
                                 :items="categories"
-                                label="Category"
+                                label="Lọc điểm ưa thích"
                                 @input="filterCategory"
                                 clearable
                                 dense
@@ -24,8 +24,15 @@
                                 persistent-hint
                                 small-chips
                                 solo></v-combobox>
+
                     <v-btn @click="showActivities = !showActivities">
-                        Toggle activities route
+                        <span v-if="showActivities">Ẩn các hoạt động</span>
+                        <span v-else>Hiện các hoạt động</span>
+                    </v-btn>
+                    
+                    <v-btn @click="showGrid = !showGrid">
+                        <span v-if="showGrid">Ẩn lưới</span>
+                        <span v-else>Hiện lưới</span>
                     </v-btn>
 
                     <v-dialog v-model="add_act_dialog"
@@ -34,7 +41,7 @@
                             <v-btn @click="addActivity(!add_act_dialog, 0)"
                                    v-bind="attrs"
                                    v-on="on">
-                                Add activity
+                                Thêm hoạt động
                             </v-btn>
                         </template>
                         <ActivityForm @addActivity="addActivity"
@@ -51,7 +58,7 @@
                             <v-btn @click="findTrip(!find_trip_dialog)"
                                    v-bind="attrs"
                                    v-on="on">
-                                Find trip
+                                Tìm chuyến đi
                             </v-btn>
                         </template>
                         <FindTripForm @findTrip="findTrip"
@@ -119,6 +126,7 @@
                                  :fillColor="'tomato'"
                                  :fillOpacity="0.8"
                                  :radius="8"
+                                 :visible="showGrid"
                                  :lat-lng="[point.TopLeftLat, point.TopLeftLon]">
                     <l-tooltip>
                         {{point.TopLeftLat}}, {{point.TopLeftLon}}
@@ -130,6 +138,7 @@
                                  :fillColor="'tomato'"
                                  :fillOpacity="0.8"
                                  :radius="8"
+                                 :visible="showGrid"
                                  :lat-lng="[point.BotRightLat, point.BotRightLon]">
                     <l-tooltip>
                         {{point.BotRightLat}}, {{point.BotRightLon}}
@@ -142,8 +151,8 @@
                             :jwt_token="jwtToken"
                             :matchedTrips="matchedTrips"/>
 
-        <ChatDialog :user_id="userId"
-                    :jwt_token="jwtToken"/>
+        <ChatDialog :userId="userId"
+                    :jwtToken="jwtToken"/>
     </div>
 </template>
 
@@ -216,6 +225,7 @@
                 destPoiId: '',
                 chosenPoi: null,
                 grid: [],
+                showGrid: false,
                 grid_get_url: "https://localhost:5001/POIs/Grid",
 
                 // for matched trips
@@ -246,6 +256,10 @@
                 if (this.jwtToken !== null) {
                     this.$cookies.remove('omachi-auth-token');
                 }
+                this.userId = this.$cookies.get('omachi-user-id');
+                if (this.userId !== null) {
+                    this.$cookies.remove('omachi-user-id');
+                }
                 this.$nextTick(function () {
                     this.$router.push('login');
                 });
@@ -253,6 +267,7 @@
 
             async getUser() {
                 this.userId = this.$cookies.get('omachi-user-id');
+                var self = this;
                 if (this.userId !== null) {
                     await axios.get(
                         this.getUserUrl + this.userId,
@@ -262,8 +277,17 @@
                             }
                         }
                     ).then((res) => {
-                        this.user = res.data;
-                        //console.log(this.user);
+                        if (!res.data.Name) {
+                            this.$router.push({
+                                name: 'profile',
+                                params: {
+                                    userId: self.userId,
+                                    jwtToken: self.jwtToken
+                                }
+                            });
+                        } else {
+                            this.user = res.data;
+                        }
                     }).catch((res) => {
                         console.log(res);
                     });
@@ -278,14 +302,16 @@
                 console.log(`Latitude : ${this.curr_loc.latitude}`);
                 console.log(`Longitude: ${this.curr_loc.longitude}`);
                 console.log(`More or less ${this.curr_loc.accuracy} meters.`);
-                this.$toast.success(`Your location is the red circle, ${this.curr_loc.accuracy} meters error.`);
+                this.$toast.success(`Vị trí của bạn là hình tròn màu đỏ, sai lệch ${this.curr_loc.accuracy} mét.`);
             },
             curr_loc_error(err) {
                 console.warn(`ERROR(${err.code}): ${err.message}`);
-                this.$toast.error("Error getting your location.");
+                this.$toast.error("Không thể tìm vị trí của bạn.");
             },
             async getCurrLoc() {
-                navigator.geolocation.getCurrentPosition(this.curr_loc_success, this.curr_loc_error, this.curr_loc_options);
+                if (this.userId && this.jwtToken) {
+                    navigator.geolocation.getCurrentPosition(this.curr_loc_success, this.curr_loc_error, this.curr_loc_options);
+                }
             },
 
             async getGrid() {
@@ -299,22 +325,23 @@
             },
 
             async getActivities() {
-                console.log('getting activities...');
-                await axios.get(
-                    this.add_getall_actsUrl.replace('user_id', this.userId),
-                    {
-                        headers: {
-                            Authorization: `Bearer ${this.jwtToken}`
+                if (this.userId) {
+                    console.log('getting activities...');
+                    await axios.get(
+                        this.add_getall_actsUrl.replace('user_id', this.userId),
+                        {
+                            headers: {
+                                Authorization: `Bearer ${this.jwtToken}`
+                            }
                         }
-                    }
-                ).then((res) => {
-                    this.activities = res.data;
-                    this.$toast.success("Get activities successfully.");
-                    //console.log(this.activities);
-                }).catch((res) => {
-                    console.log(res);
-                    this.$toast.error("Failed to get activities.");
-                });
+                    ).then((res) => {
+                        this.activities = res.data;
+                        //console.log(this.activities);
+                    }).catch((res) => {
+                        console.log(res);
+                        this.$toast.error("Không thể lấy dữ liệu các hoạt động của bạn.");
+                    });
+                }
             },
 
             async getCategories() {
@@ -335,7 +362,7 @@
                 this.polyline.latlons = [];
                 await this.getActivities();
 
-                if (this.activities.length > 1) {
+                if (this.activities && this.activities.length > 1) {
                     console.log('drawing...');
                     for (let idx in this.activities) {
                         let activity = this.activities[idx];

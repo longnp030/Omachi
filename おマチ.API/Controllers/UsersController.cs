@@ -64,7 +64,7 @@ namespace おマチ.API.Controllers
             return Ok(user);
         }
 
-        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         public IActionResult Update(Guid id, UpdateRequest model)
         {
             _userService.Update(id, model);

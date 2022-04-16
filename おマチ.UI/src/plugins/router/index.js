@@ -5,6 +5,7 @@ Vue.use(VueRouter);
 import Login from '../../components/Login.vue';
 import Register from '../../components/Register.vue';
 import Home from '../../components/Home.vue';
+import Profile from '../../components/Profile.vue';
 
 const routes = [
     {
@@ -21,6 +22,11 @@ const routes = [
         path: '/home',
         name: 'home',
         component: Home,
+    },
+    {
+        path: '/user/:userId',
+        name: 'profile',
+        component: Profile,
     },
 ]
 const router = new VueRouter({

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="msg.userId === user_id"
+        <div v-if="msg.userId === userId"
              class="chat__mymessage"
              :class="[isSame ? '' : 'chat__first']">
             <!-- <p class="chat__yourmessage__time">23:38</p> -->
@@ -9,15 +9,9 @@
         <div v-else
              class="chat__yourmessage"
              :class="[isSame ? '' : 'chat__first']">
-            <!--<div class="chat__yourmessage__avatar">
-                <img :src="avatar"
-                     alt=""
-                     v-if="!isSame"
-                     class="chat__yourmessage__img" />
-            </div>-->
             <div>
-                <p class="chat__yourmessage__user" v-if="!isSame">
-                    {{ msg.userId }}
+                <p class="chat__yourmessage__user" v-if="name&&!isSame">
+                    {{ name }}
                 </p>
                 <div class="chat__yourmessage__p">
                     <p class="chat__yourmessage__paragraph">
@@ -31,12 +25,14 @@
 </template>
 
 <script>
+    import axios from "axios";
     export default {
-        props: ["msg", "prev", "user_id"],
+        props: ["msg", "prev", "userId", "jwtToken"],
         data() {
             return {
+                getUserUrl: "https://localhost:5001/Users/",
                 isSame: false,
-                avatar: require("../assets/avatar.svg"),
+                name: null,
             };
         },
         methods: {
@@ -49,13 +45,28 @@
                     return false;
                 }
             },
+
+            async getUser() {
+                await axios.get(
+                    this.getUserUrl + this.msg.userId,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${this.jwtToken}`
+                        }
+                    }
+                ).then((res) => {
+                    this.name = res.data.Name;
+                }).catch((res) => {
+                    console.log(res);
+                });
+            },
         },
-        created() {
+        async created() {
             this.isSame = this.isSamePerson(this.msg, this.prev);
-            //if (this.msg?.from.avatar) {
-            //    this.avatar = this.msg?.from.avatar;
-            //}
         },
+        async mounted() {
+            await this.getUser();
+        }
     };
 </script>
 

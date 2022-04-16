@@ -1,34 +1,39 @@
 <template>
-    <v-app id="login" data-app>
-        <v-form class="login-form"
-                ref="form"
-                v-model="valid"
-                lazy-validation>
-            <v-text-field label="Email"
-                            :rules="[rules.required, rules.email]"
-                            v-model="authModel.Email"></v-text-field>
-            <v-text-field label="Password"
-                            :rules="[rules.required]"
-                            :type="'password'"
-                            v-model="authModel.Password"></v-text-field>
+    <div id="login-page">
+        <h1 id="login-title">Đăng nhập</h1>
 
-            <v-checkbox v-model="saveCred"
-                        color="red"
-                        label="Remember me"></v-checkbox>
+        <b-form @submit="login" @reset="reset" v-if="show" class="w-50 mt-5 form">
+            <b-form-group id="input-group-1"
+                          label="Địa chỉ email:"
+                          label-for="input-1">
+                <b-form-input id="input-1"
+                              v-model="form.Email"
+                              type="email"
+                              placeholder="Nhập email của bạn.."
+                              required></b-form-input>
+            </b-form-group>
 
-            <v-btn :disabled="!valid"
-                    color="success"
-                    class="mr-4"
-                    @click="login">
-                Login
-            </v-btn>
-            <v-btn color="success"
-                    class="mr-4"
-                    @click="register">
-                Register
-            </v-btn>
-        </v-form>
-    </v-app>
+            <b-form-group id="input-group-2"
+                          label="Mật khẩu:"
+                          label-for="input-2">
+                <b-form-input id="input-2"
+                              v-model="form.Password"
+                              type="password"
+                              placeholder="Nhập mật khẩu.."
+                              required></b-form-input>
+            </b-form-group>
+
+            <b-form-group id="input-group-4">
+                <b-form-checkbox v-model="saveCred">Giữ tôi đăng nhập</b-form-checkbox>
+            </b-form-group>
+
+            <div id="btns">
+                <b-button block type="submit" variant="primary">Đăng nhập</b-button>
+                <b-button block type="reset" variant="danger">Nhập lại</b-button>
+                <b-button block @click="register" variant="warning">Đăng ký</b-button>
+            </div>
+        </b-form>        
+    </div>
 </template>
 
 <script>
@@ -38,16 +43,9 @@
         data() {
             return {
                 authUrl: "https://localhost:5001/Users/authenticate",
-                valid: true,
                 saveCred: false,
-                rules: {
-                    required: value => !!value || 'Required.',
-                    email: value => {
-                        const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                        return pattern.test(value) || 'Invalid email.'
-                    },
-                },
-                authModel: {},
+                form: {},
+                show: true,
             };
         },
         mounted() {
@@ -69,11 +67,11 @@
              * User authentication
              * Post by axios, then save JwtToken and UserID to Cookies, finally redirect to homepage
              */
-            login() {
-                this.$refs.form.validate();
+            login(event) {
+                event.preventDefault();
                 axios.post(
                     this.authUrl,
-                    JSON.parse(JSON.stringify(this.authModel))
+                    JSON.parse(JSON.stringify(this.form))
                 ).then((res) => {
                     var authToken = res.data.JwtToken;
                     var userId = res.data.Id;
@@ -100,7 +98,18 @@
 
             register() {
                 this.$router.push('register');
-            }
+            },
+
+            reset(event) {
+                event.preventDefault()
+                // Reset our form values
+                this.form = {};
+                // Trick to reset/clear native browser form validation state
+                this.show = false;
+                this.$nextTick(() => {
+                    this.show = true
+                })
+            },
         },
         watch: {
             saveCred: function () {
@@ -111,5 +120,28 @@
 </script>
 
 <style scoped>
-    @import "../css/Login.css";
+    #login-page {
+        height: 100vh;
+        width: 100%;
+        position: fixed;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        background-image: url('../assets/login-bg.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    #login-title {
+        padding-top: 50px;
+        display: flex;
+        justify-content: space-around;
+    }
+
+    #btns {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
 </style>

@@ -1,19 +1,19 @@
 <template>
     <v-container id="matched-trips-dialog-container">
-        <v-row dense v-if="matchedTrips_to_mutate">
+        <v-row dense v-if="matchedTrips_to_mutate.length > 0">
             <v-col v-for="(matchedTrip, i) in matchedTrips_to_mutate"
                    :key="matchedTrip.Id"
                    cols="12"
                    class="matched-trip-row">
                 <v-card :color="'blue'" dark>
-                    <!-- TODO: fix color -->
+                     <!--TODO: fix color--> 
                     
                     <v-card-title class="text-h5"
                                   v-text="'Trip #' + i"></v-card-title>
                     <v-card-text>
-                        <div>Start time: {{matchedTrips_to_mutate.StartTime}}</div>
-                        <div>Arrival time: {{matchedTrips_to_mutate.ArrivalTime}}</div>
-                        <div><!-- TODO: add api get user by id to show avatar and name --></div>
+                        <div>Start time: {{matchedTrip.StartTime}}</div>
+                        <div>Arrival time: {{matchedTrip.ArrivalTime}}</div>
+                        <!--<div> TODO: add api get user by id to show avatar and name </div>-->
                     </v-card-text>
 
                     <v-card-actions>
@@ -36,6 +36,13 @@
                 </v-card>
             </v-col>
         </v-row>
+
+        <!--<v-row v-else>
+            <b-overlay show class="find-trip-overlay">
+                <b-card class="finding-trip-card" title="Đang tìm chuyến đi...">
+                </b-card>
+            </b-overlay>
+        </v-row>-->
     </v-container>
 </template>
 
@@ -59,7 +66,7 @@
         },
         data() {
             return {
-                matchedTrips_to_mutate: null,
+                matchedTrips_to_mutate: [],
                 matchedTripsUrl: "https://localhost:5001/MatchedTrip/matched_trip_id",
             }
         },
@@ -82,7 +89,12 @@
                 immediate: true,
                 deep: true,
                 handler: function () {
-                    this.matchedTrips_to_mutate = this.matchedTrips;
+                    for (var i = 0; i < this.matchedTrips.length; i++) {
+                        if (this.matchedTrips[i].Users.includes(",")) {
+                            this.matchedTrips_to_mutate.push(this.matchedTrips[i]);
+                        }
+                    }
+                    console.log(this.matchedTrips_to_mutate);
                 }
             }
         }
@@ -90,4 +102,8 @@
 </script>
 
 <style scoped>
+    .finding-trip-card {
+        background-color: #006688;
+        color: #ffffff;
+    }
 </style>

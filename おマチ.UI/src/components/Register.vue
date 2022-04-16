@@ -1,36 +1,36 @@
 <template>
-    <v-app id="register" data-app>
+    <div id="register-page">
+        <h1 id="register-title">Đăng ký</h1>
         <v-form class="register-form"
                 ref="form"
                 v-model="valid"
                 lazy-validation>
             <v-text-field label="Email"
-                            :rules="[rules.required, rules.email]"
-                            v-model="registerModel.Email"></v-text-field>
-            <v-text-field label="Password"
-                            :rules="[rules.required]"
-                            :type="'password'"
-                            v-model="confirmPwd"></v-text-field>
-            <v-text-field label="Confirm Password"
-                            :rules="[rules.required, rules.matchPwd]"
-                            :type="'password'"
-                            v-model="registerModel.Password"></v-text-field>
+                          :rules="[rules.required, rules.email]"
+                          v-model="registerModel.Email"></v-text-field>
+            <v-text-field label="Mật khẩu"
+                          :rules="[rules.required]"
+                          :type="'password'"
+                          v-model="confirmPwd"></v-text-field>
+            <v-text-field label="Xác nhận mật khẩu"
+                          :rules="[rules.required, rules.matchPwd]"
+                          :type="'password'"
+                          v-model="registerModel.Password"></v-text-field>
 
             <v-checkbox color="red"
-                        :rules="[v => !!v || 'You must agree to continue!']"
-                        label="I agree to the terms of services"></v-checkbox>
+                        :rules="[v => !!v || 'Bạn cần đồng ý để tiếp tục!']"
+                        label="Tôi đồng ý với điều khoản sử dụng"></v-checkbox>
             <v-checkbox v-model="saveCred"
                         color="red"
-                        label="Save credentials for next login."></v-checkbox>
+                        label="Giữ tôi đăng nhập"></v-checkbox>
 
             <v-btn :disabled="!valid"
-                    color="success"
-                    class="mr-4"
-                    @click="register">
-                Register
+                   class="mr-4 w-100 green"
+                   @click="register">
+                Đăng ký
             </v-btn>
         </v-form>
-    </v-app>
+    </div>
 </template>
 
 <script>
@@ -46,12 +46,12 @@
                 registerModel: {},
                 confirmPwd: '',
                 rules: {
-                    required: value => !!value || 'Required.',
+                    required: value => !!value || 'Trường này là bắt buộc.',
                     email: value => {
                         const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                        return pattern.test(value) || 'Invalid email.'
+                        return pattern.test(value) || 'Địa chỉ email không hợp lệ.'
                     },
-                    matchPwd: value => value === this.confirmPwd || 'Passwords do not match.'
+                    matchPwd: value => value === this.confirmPwd || 'Mật khẩu không khớp.'
                 }, 
             };
         },
@@ -113,5 +113,30 @@
 </script>
 
 <style scoped>
-    @import '../css/Register.css';
+    #register-page {
+        height: 100vh;
+        width: 100%;
+        position: fixed;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        background-image: url('../assets/login-bg.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    #register-title {
+        padding-top: 50px;
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .register-form {
+        width: 50%;
+        height: calc(100vh - 96px);
+        border-radius: 4px;
+        margin: 24px auto;
+        padding: 24px;
+    }
 </style>

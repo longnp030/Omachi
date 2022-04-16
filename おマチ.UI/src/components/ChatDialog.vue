@@ -4,12 +4,18 @@
             <span class="chat__header__greetings">
                 Cửa sổ trò chuyện
             </span>
+
+            <b-icon icon="dash" class="minimize-chat-btn" @click="minimize=!minimize" v-if="!minimize"></b-icon>
+            <b-icon icon="plus" class="minimize-chat-btn" @click="minimize=!minimize" v-else></b-icon>
         </div>
         <chat-list :msgs="messages"
-                   :user_id="user_id"></chat-list>
+                   :userId="userId"
+                   :jwtToken="jwtToken"
+                   v-if="!minimize"></chat-list>
         <chat-form @submitMessage="sendMessage"
-                   :user_id="user_id"
-                   :jwt_token="jwt_token"></chat-form>
+                   :userId="userId"
+                   :jwtToken="jwtToken"
+                   v-if="!minimize"></chat-form>
     </div>
 </template>
 
@@ -22,21 +28,11 @@
             ChatList,
             ChatForm,
         },
-        props: {
-            user_id: {
-                type: String,
-                required: true,
-                default: ''
-            },
-            jwt_token: {
-                type: String,
-                required: true,
-                default: '',
-            },
-        },
+        props: ["userId", "jwtToken"],
         data() {
             return {
                 messages: [],
+                minimize: false,
             };
         },
         created() {
@@ -52,14 +48,6 @@
                 this.messages.push(newMsg);
             },
         },
-        watch: {
-            user_id: function () {
-                console.log(this.user_id);
-            },
-            jwt_token: function () {
-                console.log(this.jwt_token);
-            },
-        },
     };
 </script>
 
@@ -72,19 +60,22 @@
         z-index: 800;
         margin: 0 10px 0px 0;
         align-self: end;
-        width: 200px;
+        width: 210px;
     }
 
     .chat__header {
-        background: #ffffff;
+        color: #ffffff;
         box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.05);
-        border-radius: 4px;
-        padding: 12px;
+        border-radius: 4px 4px 0 0;
+        padding: 4px 12px;
         font-size: 16px;
         background-color: #006688;
+        display: flex;
+        justify-content: space-between;
     }
 
-    .chat__header__greetings {
-        color: #292929;
+    .minimize-chat-btn {
+        cursor: pointer;
+        margin-top: 4px;
     }
 </style>

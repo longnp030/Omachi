@@ -3,8 +3,9 @@
         <chat-message v-for="(msg, index) in msgs"
                       :key="index"
                       :msg="msg"
+                      :jwtToken="jwtToken"
                       :prev="[index == 0 ? null : msgs[index - 1]]"
-                      :user_id="user_id">
+                      :userId="userId">
         </chat-message>
     </div>
 </template>
@@ -15,7 +16,7 @@
         components: {
             ChatMessage,
         },
-        props: ["msgs", "user_id"],
+        props: ["msgs", "userId", "jwtToken"],
         watch: {
             msgs() {
                 var chat_body = this.$refs.chat__body;
@@ -30,9 +31,9 @@
     .chat__body {
         padding: 12px;
         overflow: auto;
-        max-height: 300px;
         scroll-behavior: smooth;
         background-color: white;
+        max-height: 200px;
     }
 
     .chat__body::-webkit-scrollbar {
