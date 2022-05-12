@@ -64,6 +64,20 @@ namespace おマチ.API.Controllers
             return Ok(user);
         }
 
+        [HttpGet("{id}/car/own")]
+        public IActionResult CheckCar(Guid id)
+        {
+            var car = _userService.CheckCar(id);
+            return Ok(car);
+        }
+
+        [HttpPatch("{id}/car")]
+        public IActionResult AddAndOrUpdateCar(Guid id, CarModel model)
+        {
+            _userService.AddAndOrUpdateCar(id, model);
+            return Ok(new { message = "Car updated successfully" });
+        }
+
         [HttpPatch("{id}")]
         public IActionResult Update(Guid id, UpdateRequest model)
         {

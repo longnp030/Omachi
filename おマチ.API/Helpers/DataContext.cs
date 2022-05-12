@@ -26,6 +26,8 @@ namespace おマチ.API.Helpers
         }
 
         public DbSet<User> User { get; set; }
+
+        public DbSet<Car> Car { get; set; }
         public DbSet<Activity> Activity { get; set; }
         public DbSet<Cell> Cell { get; set; }
         public DbSet<Interval> Interval { get; set; }

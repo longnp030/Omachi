@@ -11,6 +11,9 @@
                                  :radius="8"
                                  :lat-lng="[curr_loc.latitude, curr_loc.longitude]"
                                  v-if="curr_loc">
+                    <l-tooltip>
+                        Vị trí hiện tại của bạn
+                    </l-tooltip>
                 </l-circle-marker>
                 <l-control id="map-utility-controls">
                     <v-combobox id="poi-filter"
@@ -83,9 +86,9 @@
                                  :visible="showActivities"
                                  @click="editMarker(!add_act_dialog, marker.Id)">
                     <l-tooltip>
-                        Name: {{marker.Name}}
+                        Tên: {{marker.Name}}
                         <br />
-                        StartTime: {{marker.StartTime}}
+                        Thời gian bắt đầu: {{marker.StartTime}}
                     </l-tooltip>
                 </l-circle-marker>
                 <l-polyline :lat-lngs="polyline.latlons" :color="polyline.color" :visible="showActivities"></l-polyline>
@@ -99,17 +102,17 @@
                                  :lat-lng="[poi.Lat, poi.Lon]">
                                  //@click="chooseTripDest($event, poi.Id)">
                     <l-tooltip>
-                        Name: {{poi.Name}}
+                        Tên: {{poi.Name}}
                         <br />
-                        Address: {{poi.Address}}
+                        Địa chỉ: {{poi.Address}}
                         <br />
-                        OpenTime: {{poi.OpenTime}}
+                        Giờ mở cửa: {{poi.OpenTime}}
                         <br />
-                        CloseTime: {{poi.CloseTime}}
+                        Giờ đóng cửa: {{poi.CloseTime}}
                         <br />
-                        Rating: {{poi.Rating}}
+                        Đánh giá: {{poi.Rating}}
                         <br />
-                        Category: {{poi.Category}}
+                        Hạng mục: {{poi.Category}}
                     </l-tooltip>
                 </l-circle-marker>
                 <l-circle-marker :color="'yellow'"
@@ -296,6 +299,11 @@
 
             curr_loc_success(pos) {
                 this.curr_loc = pos.coords;
+                //console.log(pos);
+                //this.curr_loc = {
+                //    latitude: 21.0382,
+                //    longitude: 105.783
+                //}
                 this.center = [this.curr_loc.latitude, this.curr_loc.longitude]
 
                 console.log('Your current position is:', this.curr_loc);
@@ -362,7 +370,7 @@
                 this.polyline.latlons = [];
                 await this.getActivities();
 
-                if (this.activities && this.activities.length > 1) {
+                if (this.activities && this.activities.length >= 1) {
                     console.log('drawing...');
                     for (let idx in this.activities) {
                         let activity = this.activities[idx];

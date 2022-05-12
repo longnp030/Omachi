@@ -105,7 +105,8 @@
                         console.log(res)
                     });
                 }).catch((res) => {
-                    console.log(res)
+                    console.log(res);
+                    this.$toast.error("Địa chỉ email này đã được sử dụng.");
                 });
             },
         }

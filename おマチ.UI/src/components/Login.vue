@@ -92,7 +92,8 @@
                         });
                     });
                 }).catch((res) => {
-                    console.log(res)
+                    console.log(res);
+                    this.$toast.error("Sai email hoặc mật khẩu, vui lòng kiểm tra lại.");
                 });
             },
 

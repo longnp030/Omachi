@@ -1,6 +1,6 @@
 <template>
     <v-container id="matched-trips-dialog-container">
-        <v-row dense v-if="matchedTrips_to_mutate.length > 0">
+        <v-row dense v-if="matchedTrips_to_mutate">
             <v-col v-for="(matchedTrip, i) in matchedTrips_to_mutate"
                    :key="matchedTrip.Id"
                    cols="12"
@@ -9,10 +9,12 @@
                      <!--TODO: fix color--> 
                     
                     <v-card-title class="text-h5"
-                                  v-text="'Trip #' + i"></v-card-title>
+                                  v-text="'Chuyến #' + (i+1)"></v-card-title>
                     <v-card-text>
-                        <div>Start time: {{matchedTrip.StartTime}}</div>
-                        <div>Arrival time: {{matchedTrip.ArrivalTime}}</div>
+                        <div><b>Mã chuyến xe:</b> <i>{{matchedTrip.Id}}</i></div>
+                        <div><b>Khởi hành:</b> <i>{{matchedTrip.StartTime}}</i></div>
+                        <div><b>Đến lúc:</b> <i>{{matchedTrip.ArrivalTime}}</i></div>
+                        <div><b>Địa điểm:</b> <i>{{matchedTrip.POI}}</i></div>
                         <!--<div> TODO: add api get user by id to show avatar and name </div>-->
                     </v-card-text>
 
@@ -22,7 +24,7 @@
                                rounded
                                small
                                @click="rejectTrip(i)">
-                            Reject
+                            Từ chối
                         </v-btn>
                         <v-spacer></v-spacer>
                         <v-btn class="ml-2 mt-5"
@@ -30,11 +32,12 @@
                                rounded
                                small
                                @click="acceptTrip(matchedTrips_to_mutate.Id)">
-                            Accept
+                            Chấp nhận
                         </v-btn>
                     </v-card-actions>
                 </v-card>
             </v-col>
+            <!--<v-col>Chúng tôi tìm được {{matchedTrips_to_mutate.length}} chuyến đi cho bạn!</v-col>-->
         </v-row>
 
         <!--<v-row v-else>
@@ -66,7 +69,7 @@
         },
         data() {
             return {
-                matchedTrips_to_mutate: [],
+                matchedTrips_to_mutate: null,
                 matchedTripsUrl: "https://localhost:5001/MatchedTrip/matched_trip_id",
             }
         },
@@ -83,18 +86,16 @@
                 //    }
                 //)
             },
+            acceptTrip() {
+                this.matchedTrips_to_mutate = null;
+            }
         },
         watch: {
             matchedTrips: {
                 immediate: true,
                 deep: true,
                 handler: function () {
-                    for (var i = 0; i < this.matchedTrips.length; i++) {
-                        if (this.matchedTrips[i].Users.includes(",")) {
-                            this.matchedTrips_to_mutate.push(this.matchedTrips[i]);
-                        }
-                    }
-                    console.log(this.matchedTrips_to_mutate);
+                    this.matchedTrips_to_mutate = this.matchedTrips;
                 }
             }
         }
@@ -104,6 +105,20 @@
 <style scoped>
     .finding-trip-card {
         background-color: #006688;
-        color: #ffffff;
+        color: #000;
+    }
+    #matched-trips-dialog-container {
+        width: 480px;
+        margin-left: 6px;
+    }
+    .v-card__title {
+        padding: 0 16px;
+    }
+    .v-card {
+        max-height: 222px;
+        width: 480px;
+    }
+    .v-card__actions {
+        margin-top: -70px;
     }
 </style>

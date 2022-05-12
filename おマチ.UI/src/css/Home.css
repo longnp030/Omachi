@@ -53,9 +53,10 @@
 #home #map-utility-controls .v-btn:not(.v-btn--round).v-size--default {
     height: 30px;
     padding: 0 8px;
-    font-size: 12px;
+    font-size: 18px;
 }
 
 #home #map-utility-controls .v-input {
-    max-width: 200px;
+    max-width: 234px;
+    font-size: 18px;
 }

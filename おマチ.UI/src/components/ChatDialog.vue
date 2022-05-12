@@ -32,7 +32,7 @@
         data() {
             return {
                 messages: [],
-                minimize: false,
+                minimize: true,
             };
         },
         created() {

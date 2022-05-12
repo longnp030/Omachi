@@ -142,7 +142,7 @@
 
                 poi: null,
                 poi_name: '',
-                startTime: '',
+                startTime: new Date().toTimeString().substring(0, 8),
                 arrivalTime: '', 
                 get_poi_url: "https://localhost:5001/POIs/poi_id",
                 matching_url: "https://localhost:5001/Users/user_id/matching",

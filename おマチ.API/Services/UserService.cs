@@ -16,6 +16,8 @@ namespace おマチ.API.Services
         AuthenticateResponse Authenticate(AuthenticateRequest model);
         IEnumerable<User> GetAll();
         User GetById(Guid id);
+        object CheckCar(Guid id);
+        void AddAndOrUpdateCar(Guid id, CarModel model);
         void Register(RegisterRequest model);
         void Update(Guid id, UpdateRequest model);
         void Delete(Guid id);
@@ -58,6 +60,40 @@ namespace おマチ.API.Services
         public User GetById(Guid id)
         {
             return GetUser(id);
+        }
+
+        public object CheckCar(Guid id)
+        {
+            var car = _context.Car.SingleOrDefault(c => c.UserId == id);
+            if (car != null)
+            {
+                return car;
+            }
+            return false;
+        }
+
+        public void AddAndOrUpdateCar(Guid id, CarModel model)
+        {
+            var tmpCar = _context.Car.SingleOrDefault(c => c.UserId == id);
+            if (tmpCar == null)
+            {
+                var car = new Car
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = id,
+                    Name = model.Name,
+                    Number = model.Number,
+                    Color = model.Color
+                };
+                _context.Car.Add(car);
+                _context.SaveChanges();
+            }
+            else
+            {
+                _mapper.Map(model, tmpCar);
+                _context.Car.Update(tmpCar);
+                _context.SaveChanges();
+            }
         }
 
         public void Register(RegisterRequest model)
